@@ -2,7 +2,7 @@
 
 ## Automated checks
 
-`./scripts/test.sh unit` runs 27 tests for effect parameters, lid interpolation,
+`./scripts/test.sh unit` runs 28 tests for effect parameters, lid interpolation,
 sensor-jitter handling, capture safety conditions, the sound cycle, preference
 validation, cursor hide/show ownership, and update trust/default settings. These use test inputs and injected
 cursor callbacks; they do not validate a physical sensor or the OS cursor hook.
@@ -11,7 +11,7 @@ closing rejected devices, and keeping unrelated SPU interfaces out of angle read
 
 `./scripts/test.sh all` additionally exercises GPU blur and edge fading, opaque
 rendering, preview thumbnails, rendering sleep/wake behavior, and presentation
-cadence on the built-in display. The full suite currently contains 45 tests.
+cadence on the built-in display. The full suite currently contains 46 tests.
 The expanded presentation checks reproduce unresolved pacing failures at requested
 60/120 fps and measure main-thread drawable waits. See [the performance investigation](PERFORMANCE.md)
 for the baseline, unsuccessful experiment, and hardware limits; the full suite
@@ -32,12 +32,38 @@ app-only launch exception. No global Gatekeeper change is required.
 - Start a clean installation, grant screen permission, and restart if requested.
 - Confirm the permission, sensor angle, sample preview, and three styles.
 - Run the five-second desktop demonstration; confirm capture and pointer state recover.
+- Keep the effect and general-settings windows open; confirm both remain in the captured desktop during the effect, including after a second demonstration.
 - Move the lid slowly, then reverse direction. Inspect the beginning and end of the effect.
 - Check soft edges, menu-bar coverage, pointer hiding, and pointer restoration after pause.
 - Check opening past the cutoff, screen lock, sleep/wake, and quitting during the effect.
 - With an external display attached, verify it stays unaffected and the pointer is visible there.
 - Leave the app idle, close its window, and inspect CPU and Energy Impact after settling.
 - Verify screen permission persists across an update with the same signing identity.
+
+## Bottom edge and visible Liduo windows
+
+The first installed preview exposed a crash missing from the two-window probe:
+SwiftUI also supplied a visible service window with an unassigned negative
+`windowNumber`. Converting it directly to `CGWindowID` trapped before capture
+started. Window IDs now use exact conversion and skip nonpositive or out-of-range
+numbers; a regression test covers these values alongside valid and duplicate IDs.
+All 42 selected checks passed after this correction. In the installed signed
+0.2.8 build 20, the real desktop demonstration captured frames, displayed the
+effect, then hid it and restored the cursor without an error. The original
+permission and saved effect preferences were retained.
+
+The bottom edge's feathering and extra blur band are ten times narrower. The
+rendered desktop was inspected before and after; all 41 selected functional,
+rendering, and GPU-budget checks passed. The four known presentation-cadence
+checks were excluded from this run.
+
+A live ScreenCaptureKit probe using the production capture code reproduced the
+missing-window issue on the old filter. With the new filter, two visible windows
+from the capturing app remained in the output. Their pixels continued updating
+behind an excluded effect window, both when that window was created after capture
+started and when an existing window was shown during a second capture session.
+The probe saved only sampled RGB values and results, not desktop screenshots.
+It did not replace the installed app or test physical lid movement.
 
 ## Stable permission identity — 0.2.7
 

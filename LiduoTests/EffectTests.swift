@@ -2,6 +2,10 @@ import XCTest
 @testable import Liduo
 
 final class EffectTests: XCTestCase {
+    @MainActor func testCaptureSkipsUnassignedAndOutOfRangeWindowNumbers() {
+        XCTAssertEqual(DesktopCapture.windowIDs(for: [-1, 0, 42, Int.max, 42, 73]), [42, 73])
+    }
+
     func testSlowQuantizedLidMotionStaysContinuousAt60And120FPS() {
         for fps in [60.0, 120.0] {
             for speed in [0.5, 1.0, 2.0, 4.0, 6.0, 10.0] {

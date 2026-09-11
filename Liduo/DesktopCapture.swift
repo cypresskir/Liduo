@@ -63,8 +63,9 @@ private final class StreamSink: NSObject, SCStreamOutput, SCStreamDelegate, @unc
         }
     }
 
-    func start(onError: @escaping @MainActor @Sendable (String) -> Void) async throws {
+    func start(including windows: [NSWindow], onError: @escaping @MainActor @Sendable (String) -> Void) async throws {
         guard stream == nil else { return }
+        let includedWindowIDs = Self.windowIDs(for: windows.map(\.windowNumber))
         guard let screen = Self.builtInScreen,
               let id = screen.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID else {
             throw CaptureError.noDisplay
@@ -74,7 +75,8 @@ private final class StreamSink: NSObject, SCStreamOutput, SCStreamDelegate, @unc
         guard let display = content.displays.first(where: { $0.displayID == id }) else { throw CaptureError.noDisplay }
         let ownApp = content.applications.filter { $0.processID == ProcessInfo.processInfo.processIdentifier }
         guard !ownApp.isEmpty else { throw CaptureError.noFilter }
-        let filter = SCContentFilter(display: display, excludingApplications: ownApp, exceptingWindows: [])
+        let includedWindows = content.windows.filter { includedWindowIDs.contains($0.windowID) }
+        let filter = SCContentFilter(display: display, excludingApplications: ownApp, exceptingWindows: includedWindows)
         filter.includeMenuBar = true
         let config = SCStreamConfiguration()
         let nativeWidth = screen.frame.width * screen.backingScaleFactor
@@ -106,6 +108,10 @@ private final class StreamSink: NSObject, SCStreamOutput, SCStreamDelegate, @unc
     func stop() async {
         if let stream { try? await stream.stopCapture() }
         stream = nil; sink = nil; mailbox.clear()
+    }
+
+    static func windowIDs(for numbers: [Int]) -> Set<CGWindowID> {
+        Set(numbers.compactMap { $0 > 0 ? CGWindowID(exactly: $0) : nil })
     }
 }
 

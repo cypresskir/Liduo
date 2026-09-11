@@ -50,7 +50,7 @@ fragment float4 foldFragment(VertexOut in [[stage_in]],
     float3 clear = tex.sample(smp, uv).rgb;
     float3 soft = blurred.sample(smp, uv).rgb;
     float3 matte = frosted.sample(smp, uv).rgb;
-    float2 edgeDistance = float2(min(in.uv.x, 1 - in.uv.x) * u.mode.w, min(in.uv.y, 1 - in.uv.y));
+    float2 edgeDistance = float2(min(in.uv.x, 1 - in.uv.x) * u.mode.w, min(in.uv.y, (1 - in.uv.y) * 10));
     float edgeWidth = max(.00001, .06 * smoothstep(0.0, .55, p) * (.4 + .6 * height));
     float2 feather = smoothstep(float2(0), float2(edgeWidth), edgeDistance);
     float edge = feather.x * feather.y;

@@ -246,7 +246,8 @@ import AVFoundation
         captureTask = Task { [weak self] in
             guard let self else { return }
             do {
-                try await self.capture.start { [weak self] message in
+                let interfaceWindows = NSApp.windows.filter { $0.isVisible && $0 !== self.overlay }
+                try await self.capture.start(including: interfaceWindows) { [weak self] message in
                     guard let self, self.generation == token else { return }
                     self.captureFailed(message)
                 }
