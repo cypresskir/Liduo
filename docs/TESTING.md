@@ -77,6 +77,24 @@ Detailed timing and idle measurements are in [PERFORMANCE.md](PERFORMANCE.md).
 Earlier sections below record the state at their respective checks, rather than
 additional unresolved failures in build 22.
 
+### Public download verification
+
+The experimental [v0.2.8 release](https://github.com/cypresskir/Liduo/releases/tag/v0.2.8)
+was published with the exact ZIP, DMG, and both checksum files. All four downloaded
+without authentication; both SHA-256 checks passed and the downloaded files matched
+the local release artifacts byte for byte. The public feed was published only
+after its ZIP was reachable, then its feed and archive signatures verified with
+the app's existing public key.
+
+The documented npx command installed from the public tag into a separate temporary
+folder. Homebrew installed from a freshly fetched public tap into another temporary
+folder. Both retained quarantine, passed deep code-signature verification, and
+contained the exact executable installed in `/Applications` (version 0.2.8, build 22).
+No first-launch permission grant on a different Mac is implied by these checks.
+GitHub Actions also passed the release commit's app build, 29 hardware-independent
+Swift tests, and 17 installer/signature tests:
+[release CI run](https://github.com/cypresskir/Liduo/actions/runs/34626641654).
+
 ## Bottom edge and visible Liduo windows
 
 The first installed preview exposed a crash missing from the two-window probe:
