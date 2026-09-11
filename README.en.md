@@ -21,7 +21,7 @@ The effect works offline; checking for and downloading updates needs an internet
 - **⌘⌥B** to toggle the effect or stop a demonstration.
 - Optional opening sound and launch at login.
 - Built-in signed updates, with optional daily checks and installation by consent.
-- Capture and rendering stop when no longer needed; identical frames reuse prepared blur.
+- Screen capture and rendering stop when the effect is no longer needed.
 
 ## Status and requirements
 
@@ -77,78 +77,6 @@ After installation, use **Проверить обновления…** in Liduo'
 Optional automatic checking is off by default. Updates are signed independently of
 Apple Developer ID. See [UPDATES.md](docs/UPDATES.md) for details and publishing instructions.
 
-## Build and try it
-
-Use **macOS 26+**, **Apple silicon**, the full **Xcode 26.4+**, and **XcodeGen**.
-Open Xcode once to finish installing its components. Select that Xcode installation
-under **Xcode → Settings → Locations → Command Line Tools**.
-
-```sh
-brew install xcodegen
-xcodebuild -version
-```
-
-Get the source, then run the following commands from the project root:
-
-```sh
-git clone https://github.com/cypresskir/Liduo.git
-cd Liduo
-```
-
-The build script downloads the official Sparkle 2.9.6 distribution, verifies its
-SHA-256, and generates the Xcode project. The first dependency download needs an
-internet connection; subsequent builds use the `.build/` cache. A separate Metal
-Toolchain installation is not required.
-
-### Build without an Apple certificate
-
-An ad-hoc signature is enough for a local build. No Apple Developer account or
-update-signing key is required:
-
-```sh
-./build.sh adhoc
-```
-
-This produces `dist/Liduo-v0.2.5-macos-arm64-adhoc.zip` and an adjacent `.sha256` file.
-The script does not overwrite an existing archive. Before rebuilding, move the
-previous ZIP and its `.sha256` file to a backup folder.
-
-Extract the app into a temporary folder:
-
-```sh
-liduo_stage=$(mktemp -d "${TMPDIR:-/tmp}/Liduo.XXXXXX")
-ditto -x -k dist/Liduo-v0.2.5-macos-arm64-adhoc.zip "$liduo_stage"
-open "$liduo_stage"
-```
-
-Drag `Liduo.app` from that folder into Applications. If Liduo is already installed,
-quit it from its menu and move the previous copy to a backup folder first. Then run:
-
-```sh
-open "/Applications/Liduo.app"
-```
-
-If macOS blocks a downloaded build, see [Install](#install) for an app-only launch
-exception. Removing quarantine is normally unnecessary for a locally built app.
-
-### Build with a stable signing identity
-
-If you already have an **Apple Development** certificate, use it for local updates
-so macOS can recognize existing screen permission. Substitute your Team ID and the
-certificate SHA-1 shown by the first command:
-
-```sh
-security find-identity -v -p codesigning
-export LIDUO_TEAM_ID="YOUR_TEAM_ID"
-export LIDUO_SIGN_IDENTITY="YOUR_CERTIFICATE_SHA1"
-./build.sh development
-```
-
-This produces `dist/Liduo-v0.2.5-local-arm64.zip`. Extract and install it as above,
-substituting that archive name in the `ditto` command. Keep the bundle identifier,
-certificate, and installation folder stable across updates. Ad-hoc builds may
-require screen permission again. See [Xcode and signing instructions](docs/BUILDING.md).
-
 ### First launch
 
 1. Choose **Разрешить доступ…** and enable Liduo in macOS screen-recording settings.
@@ -158,18 +86,10 @@ require screen permission again. See [Xcode and signing instructions](docs/BUILD
 The bundled sample preview works without permission. Closing the window leaves
 Liduo running in the menu bar; choose **Выйти из Liduo** to quit.
 
-### Checks
+## Build and try it
 
-```sh
-./build.sh check          # compile only; no installation or archive
-./scripts/test.sh unit    # core tests; no signing certificate needed
-npm test                 # installer and signature tests; requires Node.js 22+
-```
-
-`./scripts/test.sh all` also exercises Metal and the built-in display. It requires
-an unlocked graphical session on a MacBook and briefly shows an animation.
-Preparing a signed update feed is only needed when releasing a version; see the
-[update publishing instructions](docs/UPDATES.md).
+Use **macOS 26+**, **Apple silicon**, the full **Xcode 26.4+**, and **XcodeGen**.
+See the [developer instructions](docs/BUILDING.md) for Xcode setup, building, signing, and tests.
 
 ## How it works
 

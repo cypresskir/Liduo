@@ -6,4 +6,4 @@ labels: enhancement
 
 **What problem would this solve? / Какую проблему это решит?**
 
-**Suggested behavior / Предлагаемое поведение:**
+**How should it work? / Как должно работать?**
