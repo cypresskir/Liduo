@@ -55,9 +55,14 @@ installed test copy remained at 0.2.6. Test versions are not public releases.
 The final development-signed 0.2.5 was installed in `/Applications`. Its settings,
 screen permission, sound, and launch-at-login preference were retained. Automatic
 update checks remained off. The settings and update dialogs display in Russian.
-The public feed is not published yet, so the production check currently reports
-a retrieval error. A full update against GitHub and a public ad-hoc update on
-another Mac remain release checks.
+The release archive and signed feed were published to GitHub and downloaded
+without authentication; their SHA-256 and Ed25519 signatures verified. Homebrew
+6.0.22 and npx with npm 12 installed the published archive into separate temporary
+folders. npm 12 requires the documented per-command `--allow-git=all` option.
+A public ad-hoc update on another Mac remains unverified.
+The installed development build accepted the public feed's Ed25519 signature.
+GitHub Actions also passed the app build, 18 hardware-independent Swift tests,
+and 16 installer/signature tests on its macOS runner.
 
 ## Preview regression — 0.2.4
 

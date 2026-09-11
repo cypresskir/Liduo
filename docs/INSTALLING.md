@@ -37,9 +37,13 @@ open "$HOME/Applications/Liduo.app"
 тега GitHub, скачивает готовое приложение и проверяет SHA-256:
 
 ```sh
-npx --yes github:cypresskir/Liduo#v0.2.5 --allow-unnotarized
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.5 --allow-unnotarized
 open "/Applications/Liduo.app"
 ```
+
+Параметр `--allow-git=all` разрешает загрузку из Git только для этой команды npx.
+Начиная с npm 12 она запрещена по умолчанию; глобальные настройки npm менять не нужно.
+Подробнее: [параметр allow-git](https://docs.npmjs.com/cli/v12/using-npm/config#allow-git).
 
 Флаг `--allow-unnotarized` разрешает снять карантин только с устанавливаемой Liduo.
 Без него установщик сохраняет карантин. После первой попытки запуска разрешите
@@ -49,7 +53,7 @@ open "/Applications/Liduo.app"
 Для установки без прав администратора:
 
 ```sh
-npx --yes github:cypresskir/Liduo#v0.2.5 --allow-unnotarized --app-dir "$HOME/Applications"
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.5 --allow-unnotarized --app-dir "$HOME/Applications"
 open "$HOME/Applications/Liduo.app"
 ```
 
@@ -82,7 +86,7 @@ brew update
 brew upgrade --cask --greedy cypresskir/liduo/liduo
 
 # npx: замените v0.2.5 на тег нового выпуска
-npx --yes github:cypresskir/Liduo#v0.2.5 --allow-unnotarized --replace
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.5 --allow-unnotarized --replace
 ```
 
 Если использовали `--appdir` или `--app-dir`, повторите ту же папку при обновлении.

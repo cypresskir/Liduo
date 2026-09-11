@@ -52,11 +52,12 @@ open "/Applications/Liduo.app"
 Или через npx — нужен Node.js 22 или новее:
 
 ```sh
-npx --yes github:cypresskir/Liduo#v0.2.5 --allow-unnotarized
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.5 --allow-unnotarized
 open "/Applications/Liduo.app"
 ```
 
-Установщик npx проверяет контрольную сумму архива. Флаг `--allow-unnotarized`
+Параметр `--allow-git=all` разрешает npx скачать установщик из GitHub в этой команде;
+он нужен в npm 12. Установщик проверяет контрольную сумму архива. Флаг `--allow-unnotarized`
 снимает карантин только с Liduo; без него карантин сохраняется. Доступ к экрану
 нужно разрешить отдельно в настройках macOS.
 

@@ -53,11 +53,12 @@ open "/Applications/Liduo.app"
 Or, with Node.js 22+ and npx, install directly from GitHub:
 
 ```sh
-npx --yes github:cypresskir/Liduo#v0.2.5 --allow-unnotarized
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.5 --allow-unnotarized
 open "/Applications/Liduo.app"
 ```
 
-The npx installer verifies SHA-256. `--allow-unnotarized` removes quarantine only
+`--allow-git=all` permits GitHub fetching for this npx command, as required by npm 12.
+The installer verifies SHA-256. `--allow-unnotarized` removes quarantine only
 from the installed app; without it quarantine is retained. Neither method changes
 global Gatekeeper settings or grants screen access.
 See [installation, updates, and a user-folder option](docs/INSTALLING.md).
