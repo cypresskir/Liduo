@@ -39,6 +39,9 @@ and 16 installer/update-signature tests passed. The prepared feed and ZIP verifi
 with the app's existing update public key; no release or feed was published.
 Before publication, the complete suite also passed on the physical MacBook:
 39 tests, zero failures, including Metal and built-in-display checks.
+The experimental 0.2.6 release was then published to GitHub. Both archives and
+their checksum files downloaded without authentication; SHA-256 matched, and the
+downloaded ZIP verified against the prepared feed's Ed25519 signature.
 
 The final compressed DMG passed `hdiutil verify`. Its app passed deep strict
 code-signature verification and a checksum-based comparison of files and symbolic

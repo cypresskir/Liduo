@@ -102,5 +102,6 @@ the current installer generator explicitly accepts only the ad-hoc archive.
 At preparation time, this Mac has Apple Development identities but no Developer ID
 Application identity. The notarization script has been syntax-checked; a live
 submission cannot be validated without that certificate and a notarization profile.
-An ad-hoc archive is prepared locally. Its GitHub download and first-launch behavior
-on a second Mac remain unverified until the release is published and tested there.
+The 0.2.6 ad-hoc ZIP and DMG are published as an experimental GitHub release.
+Public downloads and their checksums were verified. First-launch behavior on a
+second Mac remains unverified.
