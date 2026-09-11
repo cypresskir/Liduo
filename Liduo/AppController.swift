@@ -398,6 +398,8 @@ import AVFoundation
     private func writeDiagnostics() {
         guard let diagnosticsURL else { return }
         let dictionary: [String: Any] = ["angle": model.angle ?? -1, "sensor": model.sensorAvailable,
+            "modelIdentifier": sensor.modelIdentifier,
+            "macOSVersion": ProcessInfo.processInfo.operatingSystemVersionString,
             "sensorMode": model.sensorDetail, "permission": model.permissionGranted,
             "capturing": model.capturing, "overlayVisible": model.overlayVisible,
             "cursorHiddenByLiduo": effectCursor.hiddenByLiduo,

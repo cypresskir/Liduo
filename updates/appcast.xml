@@ -6,6 +6,25 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
     <channel>
         <title>Liduo</title>
         <item>
+            <title>0.2.6</title>
+            <pubDate>Fri, 11 Sep 2026 12:59:37 +0200</pubDate>
+            <sparkle:version>17</sparkle:version>
+            <sparkle:shortVersionString>0.2.6</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[# Liduo 0.2.6
+
+- Установка через DMG: перенесите Liduo в «Программы». Терминал и менеджеры пакетов не нужны.
+- Внутри диска — инструкция на русском для первого запуска и разрешения доступа к экрану.
+- Более надежный поиск датчика: проверяются все подходящие устройства и корректность показаний.
+- Диагностика показывает модель Mac и объясняет ограничение Air M1 и MacBook Pro 13″ с M1/M2.
+
+Нужны macOS 26+, Apple silicon и совместимый датчик угла крышки.
+Сборка не прошла нотарификацию Apple: первый запуск может потребовать разрешения
+«Все равно открыть» в настройках macOS. Разрешайте запуск, только если доверяете источнику.
+]]></description>
+            <enclosure url="https://github.com/cypresskir/Liduo/releases/download/v0.2.6/Liduo-v0.2.6-macos-arm64-adhoc.zip" length="5142434" type="application/octet-stream" sparkle:edSignature="NSUHZktb6vpcOxnU7EY3PbdTnYBwobXD7QMMTVBMVJoeAGETjekSImE1yrGMCILjJ/dM78jL0sodz38T4rxGAA=="/>
+        </item>
+        <item>
             <title>0.2.5</title>
             <pubDate>Fri, 11 Sep 2026 09:56:50 +0200</pubDate>
             <sparkle:version>16</sparkle:version>
@@ -23,6 +42,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: QCx8VFKtgsa/tD3PLaQf5W5kEWDF0lSSyqgNRpJHvh4mYNLtnkoVyrmFk1Noj+gkhhc/HU5EjFGx/6NybrnsDQ==
-length: 1768
+edSignature: ocUvkNk3qLOncHvv0+IXZAX/IJqjP9XzmCEW2xvHSKKlNVs38+56IdWglEbX0J7BuVj0Tn3OI0BLc5T/E3n4BA==
+length: 3536
 -->

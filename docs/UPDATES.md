@@ -30,11 +30,12 @@ Automatic checks are opt-in. System profiling is disabled. See [PRIVACY.md](../P
 1. Increase both `MARKETING_VERSION` and `CURRENT_PROJECT_VERSION` in `project.yml`.
    Match `package.json` to the marketing version. Sparkle compares the build number.
 2. Add brief user-facing release notes in `updates/VERSION.md`.
-3. Build and prepare the exact archive:
+3. Build and prepare the exact archive. DMG packaging needs uv; see [BUILDING.md](BUILDING.md).
 
    ```sh
    ./build.sh adhoc
-   ./scripts/prepare-update.sh dist/Liduo-v0.2.5-macos-arm64-adhoc.zip
+   ./scripts/build-dmg.sh dist/Liduo-v0.2.6-macos-arm64-adhoc.zip
+   ./scripts/prepare-update.sh dist/Liduo-v0.2.6-macos-arm64-adhoc.zip
    npm test
    ./scripts/test.sh unit
    ```
@@ -42,7 +43,7 @@ Automatic checks are opt-in. System profiling is disabled. See [PRIVACY.md](../P
 4. The preparation script verifies the Keychain public key matches the app, pins
    the archive hash in both installers, generates the feed using Sparkle's tools,
    and verifies its signature. Existing feed entries keep their original URLs.
-5. Publish the tagged source and attach the ZIP and SHA-256 file to GitHub Releases.
+5. Publish the tagged source and attach the DMG, ZIP, and both SHA-256 files to GitHub Releases.
    Publish `updates/appcast.xml` to `main` **after the archive is reachable**. An
    existing user must never be offered an archive that has not been uploaded yet.
 6. Test an older installed version against the public feed, including install,

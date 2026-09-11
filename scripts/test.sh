@@ -14,7 +14,7 @@ liduo_derived="${LIDUO_DERIVED_DATA:-$(mktemp -d "${TMPDIR:-/private/tmp}/LiduoT
 liduo_results="${LIDUO_TEST_RESULTS:-$liduo_derived/Tests.xcresult}"
 liduo_selection=()
 if [[ "$liduo_suite" == unit ]]; then
-  liduo_selection=(-only-testing:LiduoTests/EffectTests -only-testing:LiduoTests/CursorTests -only-testing:LiduoTests/UpdateTests)
+  liduo_selection=(-only-testing:LiduoTests/EffectTests -only-testing:LiduoTests/CursorTests -only-testing:LiduoTests/UpdateTests -only-testing:LiduoTests/LidSensorTests)
 else
   echo 'All tests require a physical MacBook with an active built-in display; a full-screen animation will appear.'
 fi

@@ -225,6 +225,7 @@ struct GeneralSettingsView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     DisclosureGroup("Диагностика", isExpanded: $diagnosticsExpanded) {
                         VStack(spacing: 12) {
+                            detail("Модель Mac", value: controller.sensor.modelIdentifier)
                             detail("Угол крышки", value: model.angle.map { "\(Int($0))°" } ?? "Нет данных")
                             detail("Датчик", value: !model.preferences.enabled || model.suspended ? "Не используется" : (model.sensorAvailable ? "Подключен" : "Недоступен"))
                             detail("Эффект", value: model.status)

@@ -1,6 +1,6 @@
 cask "liduo" do
-  version "0.2.5"
-  sha256 "0fdb76af88983f82e090d4aba90a64c64b4f555b7b791942e7822dd0bb5f0450"
+  version "0.2.6"
+  sha256 "ef98fc60164d3aa062d7d2a820acd98435c104cf64f657711372280236e114a6"
 
   url "https://github.com/cypresskir/Liduo/releases/download/v#{version}/Liduo-v#{version}-macos-arm64-adhoc.zip"
   name "Liduo"

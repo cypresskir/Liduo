@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.6 — 2026-09-11
+
+- Added a drag-and-drop DMG with an Applications shortcut and an offline Russian first-launch guide.
+- Added repeatable DMG packaging with payload, signature, layout, and checksum verification.
+- Tried every matching lid sensor and validated its angle report before reporting a connection.
+- Added IORegistry discovery, model-aware diagnostics, and a hardware compatibility guide.
+
 ## 0.2.5 — 2026-09-11
 
 - Added built-in updates through Sparkle 2.9.6, with manual checks in the menus and General Settings.

@@ -2,14 +2,16 @@
 
 ## Automated checks
 
-`./scripts/test.sh unit` runs 18 tests for effect parameters, lid interpolation,
+`./scripts/test.sh unit` runs 25 tests for effect parameters, lid interpolation,
 sensor-jitter handling, capture safety conditions, the sound cycle, preference
 validation, cursor hide/show ownership, and update trust/default settings. These use test inputs and injected
 cursor callbacks; they do not validate a physical sensor or the OS cursor hook.
+Sensor tests cover trying every candidate, failed opens, invalid reports,
+closing rejected devices, and keeping unrelated SPU interfaces out of angle readings.
 
 `./scripts/test.sh all` additionally exercises GPU blur and edge fading, opaque
 rendering, preview thumbnails, rendering sleep/wake behavior, and presentation
-cadence on the built-in display. The full suite currently contains 32 tests.
+cadence on the built-in display. The full suite currently contains 39 tests.
 
 The GitHub Actions workflow uses the macOS 26 arm64 runner. It compiles the app
 and runs only the hardware-independent tests. It does not sign or publish an
@@ -29,6 +31,33 @@ app-only launch exception. No global Gatekeeper change is required.
 - With an external display attached, verify it stays unaffected and the pointer is visible there.
 - Leave the app idle, close its window, and inspect CPU and Energy Impact after settling.
 - Verify screen permission persists across an update with the same signing identity.
+
+## DMG installer — 0.2.6
+
+The Release archive built successfully. All 25 hardware-independent Swift tests
+and 16 installer/update-signature tests passed. The prepared feed and ZIP verified
+with the app's existing update public key; no release or feed was published.
+Before publication, the complete suite also passed on the physical MacBook:
+39 tests, zero failures, including Metal and built-in-display checks.
+
+The final compressed DMG passed `hdiutil verify`. Its app passed deep strict
+code-signature verification and a checksum-based comparison of files and symbolic
+links against the original ZIP. A separate copy from the mounted image into a
+temporary folder also retained a valid signature and reported version 0.2.6, build 17.
+The Applications shortcut, offline guide, Finder window settings, icon positions,
+and embedded background were checked directly in the mounted image.
+
+The background image was visually inspected; duplicate Retina scaling was fixed.
+Native Finder inspection could not be completed reliably: the disk image disappeared
+after attempts to open it through Finder, and the UI tool later returned an invalid
+ScreenCaptureKit parameter error. The delivered image was rebuilt and verified
+without opening the system disk-image handler. The complete drag-and-first-launch
+flow on a second Mac remains unverified.
+
+The browser environment blocked the local HTML preview. The guide's text and actual
+CSS color pairs were checked, including both themes; all text pairs exceed 4.5:1.
+The detector's inherited-color/media-query false positives are suppressed only for
+the guide file. A browser-rendered visual check remains unverified.
 
 ## In-app updates — 0.2.5
 
@@ -114,6 +143,17 @@ On macOS 26.5.1 with Xcode 26.4 and Swift 6.3:
   on GitHub because the repository has not been published.
 
 ## Evidence and limits
+
+The current compatibility changes passed all 25 hardware-independent tests.
+A separate live probe using the production sensor code on `Mac16,8`, macOS
+26.5.1, found one angle candidate, read 131 degrees, and read it again after a
+stop/start cycle. No callbacks arrived after either stop. The diagnostic script
+also found the standard angle interface and three unrelated vendor-specific
+SPU interfaces on that Mac. An isolated verification app also displayed
+`Mac16,8`, 129 degrees and a connected sensor in its diagnostics UI; screen
+capture was not enabled for that copy. This verifies local discovery and reading, not
+other models, physical sleep/wake, or lid-motion latency. See
+[model compatibility](COMPATIBILITY.md) for the hardware limits and report command.
 
 The application has been tested locally on a MacBook Pro M4 Pro running macOS
 26.5.1. Version 0.2.3's installed UI was inspected with both a clear sample image

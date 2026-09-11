@@ -25,52 +25,30 @@ The effect works offline; checking for and downloading updates needs an internet
 
 ## Status and requirements
 
-**Experimental version 0.2.5.** [Download the release](https://github.com/cypresskir/Liduo/releases/tag/v0.2.5)
-or install it with Homebrew or npx. The archive is ad-hoc signed; it has no Developer ID certificate or Apple notarization.
+**Experimental version 0.2.6.** [Download the DMG](https://github.com/cypresskir/Liduo/releases/download/v0.2.6/Liduo-v0.2.6-macos-arm64.dmg)
+or open the [release page](https://github.com/cypresskir/Liduo/releases/tag/v0.2.6).
+The archive is ad-hoc signed; it has no Developer ID certificate or Apple notarization.
 Development-signed local builds are separate from this downloadable archive.
 
 - macOS **26 or later** and an **Apple silicon MacBook with a compatible lid-angle sensor**.
 - Tested on a **MacBook Pro with M4 Pro**. Compatibility with other models is not established.
+- **MacBook Air M1 and 13-inch MacBook Pro M1/M2 lack the required angle sensor.** See [model compatibility and diagnostics (Russian)](docs/COMPATIBILITY.md).
 - The full-screen effect needs macOS screen-recording permission. The sample preview does not.
 - Only the built-in display is affected; external displays remain unchanged.
 
 ## Install
 
-With Homebrew:
+Version 0.2.6 installs without Terminal, Homebrew, Node.js, or Xcode:
 
-If Homebrew is not installed, open Terminal and run the
-[official installation command](https://brew.sh/):
+1. Open `Liduo-v0.2.6-macos-arm64.dmg` and drag Liduo to **Программы** (Applications).
+2. Launch Liduo from Applications. If macOS blocks it and you trust the source,
+   go to **System Settings → Privacy & Security → Open Anyway** and confirm.
+3. Choose **Разрешить доступ…** in Liduo and grant screen-recording permission.
 
-```sh
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
+The DMG includes a Russian guide that works offline. This free build is not
+notarized by Apple, so a first-launch exception is still required.
 
-After installation, run the commands shown under **Next steps** to make `brew`
-available in your terminal. Then install Liduo:
-
-```sh
-brew tap cypresskir/liduo https://github.com/cypresskir/Liduo
-brew install --cask cypresskir/liduo/liduo
-```
-
-If you trust this unnotarized build, allow **only Liduo** to run:
-
-```sh
-xattr -dr com.apple.quarantine "/Applications/Liduo.app"
-open "/Applications/Liduo.app"
-```
-
-Or, with Node.js 22+ and npx, install directly from GitHub:
-
-```sh
-npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.5 --allow-unnotarized
-open "/Applications/Liduo.app"
-```
-
-`--allow-git=all` permits GitHub fetching for this npx command, as required by npm 12.
-The installer verifies SHA-256. `--allow-unnotarized` removes quarantine only
-from the installed app; without it quarantine is retained. Neither method changes
-global Gatekeeper settings or grants screen access.
+Alternative installers: [Homebrew and npx](docs/INSTALLING.md#homebrew).
 See [installation, updates, and a user-folder option](docs/INSTALLING.md).
 
 After installation, use **Проверить обновления…** in Liduo's menu or General Settings.

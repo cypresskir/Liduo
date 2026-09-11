@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "installer/dmg/install.html"
+        ],
+        "createdAt": "2026-09-11T10:54:57.171Z",
+        "reason": "Agent verified CSS inheritance and both themes: body text is #f5f5f7 on #2c2c2e at 12.80:1 in the dark note, and footer is #a1a1a6 on #1c1c1e at 6.61:1. Detector incorrectly pairs inherited black text and white background across media rules. All actual text pairs exceed 4.5:1."
+      }
+    ]
+  }
+}

@@ -1,11 +1,36 @@
 # Установка Liduo
 
 Нужны **macOS 26 или новее** и **MacBook на Apple silicon** с датчиком угла крышки.
-Xcode для установки готового приложения не нужен. Версия 0.2.5 доступна в
-[GitHub Releases](https://github.com/cypresskir/Liduo/releases/tag/v0.2.5).
+Xcode для установки готового приложения не нужен. Версия 0.2.6 доступна в
+[GitHub Releases](https://github.com/cypresskir/Liduo/releases/tag/v0.2.6).
 
 Сборка имеет ad-hoc-подпись, но не сертификат Developer ID и не проверена Apple.
 Разрешайте запуск, только если доверяете источнику.
+
+## DMG: установка без Терминала
+
+[Скачайте DMG 0.2.6](https://github.com/cypresskir/Liduo/releases/download/v0.2.6/Liduo-v0.2.6-macos-arm64.dmg).
+
+1. Откройте образ и перетащите **Liduo** в **«Программы»**.
+2. Запустите приложение из «Программ». Если macOS заблокирует запуск и вы
+   доверяете источнику, откройте **Системные настройки → Конфиденциальность и
+   безопасность → Все равно открыть**. Подтвердите запуск.
+3. В Liduo нажмите **«Разрешить доступ…»** и разрешите запись экрана. Перезапустите
+   приложение, если macOS попросит.
+
+В образе есть файл **«Установка»** с инструкцией без подключения к интернету.
+Дополнительные программы и команды в Терминале не нужны. Если Liduo уже установлена,
+сначала завершите ее через меню и сохраните прежнюю копию в другой папке.
+Без прав на общую папку «Программы» перетащите приложение в папку
+`Applications` внутри своей домашней папки; при необходимости создайте ее в Finder.
+
+DMG сохраняет карантин macOS. Он упрощает копирование приложения, но не заменяет
+Developer ID и нотарификацию. Для предупреждения об обнаруженном вредоносном ПО
+или повреждении файла не используйте обход: скачайте выпуск заново и проверьте его.
+Подробнее о первом запуске — в [инструкции Apple](https://support.apple.com/en-us/102445).
+
+На MacBook Air M1 и MacBook Pro 13″ с M1/M2 нет нужного датчика угла: установка
+не добавит его. [Совместимость моделей](COMPATIBILITY.md).
 
 ## Homebrew
 
@@ -47,7 +72,7 @@ open "$HOME/Applications/Liduo.app"
 тега GitHub, скачивает готовое приложение и проверяет SHA-256:
 
 ```sh
-npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.5 --allow-unnotarized
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.6 --allow-unnotarized
 open "/Applications/Liduo.app"
 ```
 
@@ -63,12 +88,12 @@ open "/Applications/Liduo.app"
 Для установки без прав администратора:
 
 ```sh
-npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.5 --allow-unnotarized --app-dir "$HOME/Applications"
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.6 --allow-unnotarized --app-dir "$HOME/Applications"
 open "$HOME/Applications/Liduo.app"
 ```
 
 Отдельного пакета `liduo` в npm проект не публикует. Используйте полный адрес
-`github:cypresskir/Liduo#v0.2.5`, чтобы запускать установщик из этого репозитория.
+`github:cypresskir/Liduo#v0.2.6`, чтобы запускать установщик из этого репозитория.
 
 ## Первый запуск
 
@@ -86,7 +111,7 @@ open "$HOME/Applications/Liduo.app"
 с перезапуском. Настройки эффекта сохранятся. Автоматическая проверка раз в день
 включается отдельно; без нее запросы выполняются только по вашей команде.
 
-Этот способ работает после установки и через Homebrew, и через npx. Терминал
+Этот способ работает после установки через DMG, Homebrew и npx. Терминал
 для последующих обновлений не нужен. Если предпочитаете обновлять вручную через
 менеджер пакетов, сначала закройте Liduo:
 
@@ -95,8 +120,8 @@ open "$HOME/Applications/Liduo.app"
 brew update
 brew upgrade --cask --greedy cypresskir/liduo/liduo
 
-# npx: замените v0.2.5 на тег нового выпуска
-npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.5 --allow-unnotarized --replace
+# npx: замените v0.2.6 на тег нового выпуска
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.6 --allow-unnotarized --replace
 ```
 
 Если использовали `--appdir` или `--app-dir`, повторите ту же папку при обновлении.
@@ -112,7 +137,7 @@ Homebrew может снова установить карантин после 
 установка отменяется. Подробнее о подготовке обновлений: [UPDATES.md](UPDATES.md).
 
 Для удаления через Homebrew: `brew uninstall --cask cypresskir/liduo/liduo`.
-После установки через npx закройте Liduo и перенесите ее из папки установки в Корзину.
+После установки через DMG или npx закройте Liduo и перенесите ее из папки установки в Корзину.
 
 Подготовка выпуска: [RELEASING.md](RELEASING.md). Официальная документация:
 [Homebrew taps](https://docs.brew.sh/Taps), [Homebrew Cask](https://docs.brew.sh/Cask-Cookbook),

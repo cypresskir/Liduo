@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Установка Liduo</title>
+<style>
+  :root { color-scheme: light dark; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+  body { margin: 0; background: #f5f5f7; color: #1d1d1f; }
+  main { max-width: 620px; margin: 64px auto; padding: 0 28px 40px; }
+  h1 { font-size: 38px; letter-spacing: -.035em; margin: 12px 0 20px; }
+  h2 { font-size: 20px; letter-spacing: -.02em; margin: 32px 0 12px; }
+  p, li { font-size: 16px; line-height: 1.6; }
+  ol { padding-left: 24px; }
+  li { padding: 0 0 14px 8px; }
+  a { color: #0066cc; }
+  .note { padding: 16px 20px; background: #eaeaf0; border-radius: 12px; }
+  footer { margin-top: 36px; border-top: 1px solid #d2d2d7; padding-top: 18px; color: #6e6e73; font-size: 13px; line-height: 1.6; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #1c1c1e; color: #f5f5f7; }
+    footer { color: #a1a1a6; }
+    .note { background: #2c2c2e; }
+    a { color: #69afff; }
+    footer { border-color: #424245; }
+  }
+</style>
+<main>
+  <h1>Установка Liduo</h1>
+  <p>Терминал, Homebrew и Node.js для установки не нужны.</p>
+  <ol>
+    <li><strong>Перенесите Liduo в «Программы».</strong><br>
+      В окне диска перетащите иконку Liduo на папку «Программы».
+      Откройте установленную Liduo из этой папки. После переноса диск можно извлечь.
+      Если обновляете приложение вручную, сначала завершите Liduo через ее меню.</li>
+    <li><strong>Если macOS заблокировала запуск.</strong><br>
+      Сборка не подписана сертификатом Developer ID и не прошла проверку Apple.
+      Если доверяете источнику, после попытки запуска откройте
+      <strong>Системные настройки → Конфиденциальность и безопасность</strong>,
+      прокрутите вниз и нажмите <strong>«Все равно открыть»</strong> для Liduo.
+      Подтвердите открытие в следующем окне.
+      <a href="https://support.apple.com/ru-ru/102445">Инструкция Apple</a>.</li>
+    <li><strong>Разрешите доступ к экрану.</strong><br>
+      В Liduo нажмите <strong>«Разрешить доступ…»</strong>, включите доступ для Liduo
+      в настройках macOS и перезапустите приложение, если система попросит.
+      Нажмите <strong>«Показать эффект»</strong>, чтобы проверить результат.</li>
+  </ol>
+  <p class="note">Для реакции на крышку нужны <strong>macOS 26+</strong>,
+    <strong>Apple silicon</strong> и совместимый датчик угла.
+    <strong>MacBook Air M1 и MacBook Pro 13″ с M1/M2 не имеют нужного датчика.</strong>
+    На них доступны ручной предпросмотр и демонстрация.</p>
+  <h2>Если что-то не получилось</h2>
+  <p>Если нет прав на общую папку «Программы», создайте папку «Программы»
+    в своей домашней папке и перенесите Liduo туда.</p>
+  <p>Если macOS сообщает о вредоносном ПО или повреждении приложения,
+    не разрешайте его запуск. Скачайте сборку заново из
+    <a href="https://github.com/cypresskir/Liduo/releases">выпусков Liduo</a>.</p>
+  <h2>Обновления и выход</h2>
+  <p>Для обновлений выберите <strong>«Проверить обновления…»</strong> в меню Liduo.
+    Установка новой версии требует вашего согласия. После обновления macOS может
+    снова запросить разрешение на запись экрана.</p>
+  <p><strong>⌘⌥B</strong> останавливает демонстрацию или включает и приостанавливает эффект.
+    После закрытия окна Liduo остается в строке меню. Для завершения выберите
+    <strong>«Выйти из Liduo»</strong>.</p>
+  <footer>Изображение экрана обрабатывается на вашем Mac. Liduo не сохраняет кадры
+    и не отправляет их в интернет. Эта инструкция работает без подключения к сети;
+    внешние ссылки требуют интернета.</footer>
+</main>
+</html>
