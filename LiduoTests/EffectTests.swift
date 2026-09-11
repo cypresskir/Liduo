@@ -2,6 +2,52 @@ import XCTest
 @testable import Liduo
 
 final class EffectTests: XCTestCase {
+    func testSlowQuantizedLidMotionStaysContinuousAt60And120FPS() {
+        for fps in [60.0, 120.0] {
+            for speed in [0.5, 1.0, 2.0, 4.0, 6.0, 10.0] {
+                for reportRate in [speed, 10.0] {
+                    var lid = LidMotion(), fold = FoldMotion()
+                    var sampleIndex = 0, previous = 0.0
+                    var steps: [Double] = []
+                    for tick in 0...Int(fps * 8) {
+                        let time = Double(tick) / fps
+                        while Double(sampleIndex) / reportRate <= time + 1e-9 {
+                            let sampleTime = Double(sampleIndex) / reportRate
+                            lid.update(LidSample(degrees: (100 - sampleTime * speed).rounded(), timestamp: sampleTime))
+                            sampleIndex += 1
+                        }
+                        let value = fold.update(target: FoldMath.progress(angle: lid.angle(at: time)!, clearAngle: 110), at: time)
+                        let renderedAngle = 110 - value * 95
+                        if time >= 3 { steps.append(previous - renderedAngle) }
+                        previous = renderedAngle
+                    }
+                    let context = "\(speed) degrees/s at \(fps) fps, reporting at \(reportRate) Hz"
+                    XCTAssertLessThanOrEqual(steps.max()!, speed / fps * 3, "A one-degree report creates a jump: \(context)")
+                    XCTAssertGreaterThanOrEqual(steps.min()!, -0.001, "Closing must not recoil: \(context)")
+                    XCTAssertLessThan(Double(steps.filter { abs($0) < 0.001 }.count) / Double(steps.count), 0.05,
+                        "Slow motion must not freeze between reports: \(context)")
+                }
+            }
+        }
+    }
+
+    func testSlowLidInterpolationStopsAtTheMeasuredAngle() {
+        for interval in [0.25, 0.5, 1.0, 2.0] {
+            var lid = LidMotion()
+            for index in 0...6 {
+                lid.update(LidSample(degrees: 100 - Double(index), timestamp: Double(index) * interval))
+            }
+            var previous = lid.angle(at: 6 * interval)!
+            for tick in 1...Int(120 * (interval + 1)) {
+                let angle = lid.angle(at: 6 * interval + Double(tick) / 120)!
+                XCTAssertGreaterThanOrEqual(angle, 94, "Predicting past the last report creates a recoil when the lid stops")
+                XCTAssertLessThanOrEqual(angle, previous + 0.00001)
+                previous = angle
+            }
+            XCTAssertEqual(previous, 94, accuracy: 0.00001)
+        }
+    }
+
     func testStyleSelectionPreservesBehaviorAndDetectsCustomAppearance() {
         var current = Preferences()
         current.enabled = false

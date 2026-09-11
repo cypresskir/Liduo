@@ -137,19 +137,48 @@ import XCTest
             return result
         }
         let first = try prepare(1, 4)
-        let reused = try prepare(1, 4.01)
+        let reused = try prepare(1, 4)
         XCTAssertTrue(first === reused)
-        XCTAssertEqual(blur.encodedFrames, 1, "An unchanged source and quantized radius should reuse the GPU result")
+        XCTAssertEqual(blur.encodedFrames, 1, "An unchanged source and radius should reuse the GPU result")
+        _ = try prepare(1, 4.01)
+        XCTAssertEqual(blur.encodedFrames, 2, "Small radius changes must not be rounded into visible steps")
         _ = try prepare(2, 4)
-        XCTAssertEqual(blur.encodedFrames, 2, "A new captured frame must refresh the blur even when the texture object is reused")
-        _ = try prepare(2, 8)
-        XCTAssertEqual(blur.encodedFrames, 3)
-        blur.reset()
+        XCTAssertEqual(blur.encodedFrames, 3, "A new captured frame must refresh the blur even when the texture object is reused")
         _ = try prepare(2, 8)
         XCTAssertEqual(blur.encodedFrames, 4)
+        blur.reset()
+        _ = try prepare(2, 8)
+        XCTAssertEqual(blur.encodedFrames, 5)
         _ = try prepare(nil, 8)
         _ = try prepare(nil, 8)
-        XCTAssertEqual(blur.encodedFrames, 6, "Unversioned sources may be mutable; never cache them implicitly")
+        XCTAssertEqual(blur.encodedFrames, 7, "Unversioned sources may be mutable; never cache them implicitly")
+    }
+
+    func testSmallBlurRadiusChangesReachThePixels() throws {
+        let device = try XCTUnwrap(RenderResources.shared.device)
+        let queue = try XCTUnwrap(RenderResources.shared.queue)
+        let source = try texture { x, _ in (x / 4).isMultiple(of: 2) ? 255 : 0 }
+        for factor in [1, 4] {
+            let blur = FrameBlur(device: device, downsampleFactor: factor)
+            var images: [Data] = []
+            for sigma: Float in [4, 4.0625, 4.125] {
+                let command = try XCTUnwrap(queue.makeCommandBuffer())
+                let result = try XCTUnwrap(blur.encode(source: source, sigma: sigma, command: command, sourceVersion: 1))
+                let rowBytes = result.width * 8
+                let count = rowBytes * result.height
+                let readback = try XCTUnwrap(device.makeBuffer(length: count, options: .storageModeShared))
+                let blit = try XCTUnwrap(command.makeBlitCommandEncoder())
+                blit.copy(from: result, sourceSlice: 0, sourceLevel: 0, sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+                    sourceSize: MTLSize(width: result.width, height: result.height, depth: 1),
+                    to: readback, destinationOffset: 0, destinationBytesPerRow: rowBytes, destinationBytesPerImage: count)
+                blit.endEncoding()
+                command.commit(); command.waitUntilCompleted()
+                XCTAssertNil(command.error)
+                images.append(Data(bytes: readback.contents(), count: count))
+            }
+            XCTAssertNotEqual(images[0], images[1], "Small radius changes are lost at downsample factor \(factor)")
+            XCTAssertNotEqual(images[1], images[2], "The blur must change between former radius steps")
+        }
     }
 
     func testLiveFrameSleepsAndNewCaptureWakesItWithoutRenderingWhileHidden() async throws {

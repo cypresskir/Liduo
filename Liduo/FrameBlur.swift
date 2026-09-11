@@ -33,7 +33,7 @@ import MetalPerformanceShaders
     }
 
     func encode(source: MTLTexture, sigma: Float, command: MTLCommandBuffer, sourceVersion: UInt64? = nil) -> MTLTexture? {
-        let sigma = (sigma / Float(downsampleFactor) * 4).rounded() / 4
+        let sigma = sigma / Float(downsampleFactor)
         guard sigma >= 0.25 else { return source }
         if let sourceVersion, sourceVersion == cachedVersion, cachedSource === source,
            sigma == currentSigma, let cachedCommand,

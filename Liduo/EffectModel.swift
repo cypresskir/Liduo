@@ -84,6 +84,8 @@ struct LidMotion {
     private(set) var sample: LidSample?
     private var velocity = 0.0
     private var anchor = 0.0
+    private var slowStart: Double?
+    private var slowDuration = 0.0
 
     mutating func update(_ next: LidSample) {
         var nextAnchor = next.degrees
@@ -91,6 +93,16 @@ struct LidMotion {
             let dt = next.timestamp - previous.timestamp
             guard dt > 0, next.degrees != previous.degrees else { return }
             let measured = (next.degrees - previous.degrees) / dt
+            let continuingSlow = slowStart != nil && dt >= slowDuration * 0.4
+            if dt <= 2.1, abs(next.degrees - previous.degrees) <= 1, dt >= 0.15 || continuingSlow {
+                let duration = continuingSlow ? max(dt, slowDuration * 0.95) : dt
+                slowStart = angle(at: next.timestamp) ?? previous.degrees
+                slowDuration = duration
+                velocity = 0
+                anchor = next.degrees
+                sample = next
+                return
+            }
             if dt > 0.25 { velocity = 0 }
             else if velocity * measured <= 0 { velocity = measured }
             else {
@@ -99,6 +111,7 @@ struct LidMotion {
                 velocity = velocity * 0.25 + measured * 0.75
             }
         }
+        slowStart = nil
         anchor = nextAnchor
         sample = next
     }
@@ -106,6 +119,10 @@ struct LidMotion {
     func angle(at time: Double) -> Double? {
         guard let sample else { return nil }
         let age = max(0, time - sample.timestamp)
+        if let slowStart {
+            let fraction = min(1, age / slowDuration)
+            return min(180, max(0, slowStart + (sample.degrees - slowStart) * fraction))
+        }
         let forecast = anchor - sample.degrees + velocity * min(age, 0.1)
         let offset = min(4, max(-4, forecast)) * exp(-max(0, age - 0.15) / 0.045)
         return min(180, max(0, sample.degrees + offset))

@@ -2,7 +2,7 @@
 
 ## Automated checks
 
-`./scripts/test.sh unit` runs 25 tests for effect parameters, lid interpolation,
+`./scripts/test.sh unit` runs 27 tests for effect parameters, lid interpolation,
 sensor-jitter handling, capture safety conditions, the sound cycle, preference
 validation, cursor hide/show ownership, and update trust/default settings. These use test inputs and injected
 cursor callbacks; they do not validate a physical sensor or the OS cursor hook.
@@ -11,7 +11,14 @@ closing rejected devices, and keeping unrelated SPU interfaces out of angle read
 
 `./scripts/test.sh all` additionally exercises GPU blur and edge fading, opaque
 rendering, preview thumbnails, rendering sleep/wake behavior, and presentation
-cadence on the built-in display. The full suite currently contains 39 tests.
+cadence on the built-in display. The full suite currently contains 45 tests.
+The expanded presentation checks reproduce unresolved pacing failures at requested
+60/120 fps and measure main-thread drawable waits. See [the performance investigation](PERFORMANCE.md)
+for the baseline, unsuccessful experiment, and hardware limits; the full suite
+is not currently a green release gate.
+Slow-lid checks now cover one-degree reports at 0.5–10 degrees/s on 60/120 fps
+timelines, including uneven intervals produced by a 10 Hz quantized sensor.
+GPU checks also verify that small blur-radius changes reach the actual pixels.
 
 The GitHub Actions workflow uses the macOS 26 arm64 runner. It compiles the app
 and runs only the hardware-independent tests. It does not sign or publish an
