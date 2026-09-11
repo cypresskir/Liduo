@@ -1,0 +1,59 @@
+name: Liduo
+options:
+  bundleIdPrefix: local.laplapaw
+  deploymentTarget:
+    macOS: "26.0"
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: Apple Development
+    ENABLE_APP_SANDBOX: NO
+    ENABLE_HARDENED_RUNTIME: YES
+    ENABLE_DEBUG_DYLIB: NO
+    GENERATE_INFOPLIST_FILE: NO
+    MARKETING_VERSION: "0.2.3"
+    CURRENT_PROJECT_VERSION: "14"
+targets:
+  Liduo:
+    type: application
+    platform: macOS
+    sources:
+      - path: Liduo
+        excludes:
+          - FoldShaders.metal.txt
+      - path: Liduo/FoldShaders.metal.txt
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: local.laplapaw.Liduo
+        INFOPLIST_FILE: Liduo/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    dependencies:
+      - sdk: IOKit.framework
+      - sdk: ScreenCaptureKit.framework
+      - sdk: Metal.framework
+      - sdk: MetalKit.framework
+      - sdk: MetalPerformanceShaders.framework
+      - sdk: Carbon.framework
+  LiduoTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - LiduoTests
+    dependencies:
+      - target: Liduo
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Liduo.app/Contents/MacOS/Liduo"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+schemes:
+  Liduo:
+    build:
+      targets:
+        Liduo: all
+    test:
+      targets:
+        - LiduoTests

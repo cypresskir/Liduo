@@ -1,0 +1,70 @@
+#include <metal_stdlib>
+using namespace metal;
+
+struct Uniforms {
+    float4 effect; // progress, perspective, blur, shadow
+    float4 mode;   // style, opacity, reduced motion, aspect
+};
+struct VertexOut { float4 position [[position]]; float2 uv; };
+
+vertex VertexOut backgroundVertex(uint id [[vertex_id]]) {
+    float2 uv = float2((id << 1) & 2, id & 2);
+    return { float4(uv.x * 2 - 1, 1 - uv.y * 2, 0, 1), uv };
+}
+
+vertex VertexOut foldVertex(uint id [[vertex_id]], constant Uniforms &u [[buffer(0)]]) {
+    constexpr uint grid = 36;
+    constexpr uint2 corners[6] = {uint2(0,0),uint2(1,0),uint2(0,1),uint2(1,0),uint2(1,1),uint2(0,1)};
+    uint cell = id / 6;
+    float2 uv = (float2(cell % grid, cell / grid) + float2(corners[id % 6])) / float(grid);
+    float height = 1 - uv.y;
+    float bend = u.effect.x * u.effect.y * (1 - u.mode.z);
+    float x = (uv.x * 2 - 1) * (1 - 0.28 * bend * height);
+    float lift = height - sin(height * M_PI_F) * 0.012 * bend;
+    lift -= sin(uv.x * M_PI_F) * pow(height, 8.0) * 0.008 * bend;
+    return { float4(x, lift * 2 - 1, 0, 1), uv };
+}
+
+fragment float4 backgroundFragment(VertexOut in [[stage_in]],
+                                    constant Uniforms &u [[buffer(0)]]) {
+    return float4(0, 0, 0, u.mode.y);
+}
+
+fragment float4 foldFragment(VertexOut in [[stage_in]],
+                              texture2d<float> tex [[texture(0)]],
+                              texture2d<float> blurred [[texture(1)]],
+                              texture2d<float> frosted [[texture(2)]],
+                              constant Uniforms &u [[buffer(0)]]) {
+    constexpr sampler smp(filter::linear, address::clamp_to_edge);
+    float height = 1 - in.uv.y;
+    float p = u.effect.x;
+    float bend = p * u.effect.y * (1 - u.mode.z);
+    float front = 1.10 - 1.38 * smoothstep(0.0, .9, p);
+    float cover = smoothstep(front - .22, front + .22, height);
+    float transition = exp(-pow((height - front) / .19, 2.0));
+    float2 uv = in.uv;
+    uv.x = .5 + (uv.x - .5) * (1 + .036 * bend * height * height);
+    uv.y -= sin(in.uv.y * M_PI_F) * .035 * bend;
+    uv.y += transition * .012 * bend;
+
+    float3 clear = tex.sample(smp, uv).rgb;
+    float3 soft = blurred.sample(smp, uv).rgb;
+    float3 matte = frosted.sample(smp, uv).rgb;
+    float2 edgeDistance = float2(min(in.uv.x, 1 - in.uv.x) * u.mode.w, min(in.uv.y, 1 - in.uv.y));
+    float edgeWidth = max(.00001, .06 * smoothstep(0.0, .55, p) * (.4 + .6 * height));
+    float2 feather = smoothstep(float2(0), float2(edgeWidth), edgeDistance);
+    float edge = feather.x * feather.y;
+    float3 color = mix(clear, soft, smoothstep(0.0, .35, p) * height * .75);
+    color = mix(color, matte, cover);
+    color = mix(color, matte, (1 - smoothstep(0.0, edgeWidth * 2, min(edgeDistance.x, edgeDistance.y))) * smoothstep(0.0, .2, p));
+    float haze = cover * smoothstep(0.0, .4, p) * u.effect.z;
+    color = mix(color, matte * .94 + float3(.006, .007, .009), haze * .28);
+    color += transition * bend * .009 * float3(.80, .89, 1.0);
+
+    float side = pow(abs(in.uv.x * 2 - 1), 10.0);
+    float transmission = exp(-p * p * (.8 + u.effect.w * 1.7) * (.3 + 5.0 * height));
+    transmission *= 1 - side * p * .85;
+    float closing = 1 - smoothstep(.62, 1.0, p);
+    color *= transmission * closing * closing * edge;
+    return float4(color * u.mode.y, u.mode.y);
+}
