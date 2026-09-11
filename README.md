@@ -1,109 +1,108 @@
 # Liduo
 
-**A lid-driven desktop effect for your MacBook.**
+**Рабочий стол размывается и темнеет при закрытии крышки MacBook.**
 
-[Русский](README.ru.md) · [Install](docs/INSTALLING.md) · [Build from source](docs/BUILDING.md) · [Privacy](PRIVACY.md) · [Changelog](CHANGELOG.md)
+[English](README.en.md) · [Установка](docs/INSTALLING.md) · [Сборка](docs/BUILDING.md) · [Конфиденциальность](PRIVACY.md) · [История изменений](CHANGELOG.md)
 
-Liduo bends, blurs, and darkens the desktop as you close your MacBook's lid.
-It lives in the menu bar and processes screen content on your Mac.
-The effect works offline; checking for and downloading updates needs an internet connection.
+Liduo работает в строке меню и обрабатывает изображение на вашем Mac.
+Эффект работает без интернета; соединение нужно для проверки и загрузки обновлений.
 
-![Liduo settings window with the bundled sample desktop](docs/images/settings.jpg)
+![Окно настроек Liduo со встроенным примером рабочего стола](docs/images/settings.jpg)
 
-*Actual settings window. The preview uses a bundled sample image; the full-screen
- effect uses the contents of the built-in display. The interface is currently in Russian.*
+*Окно приложения. В предпросмотре используется встроенное изображение,
+а при движении крышки эффект накладывается на экран.*
 
-## What it does
+## Возможности
 
-- Three styles: **Пластика** (soft bend), **Тень** (deeper shading), and **Иней** (frosted glass).
-- Adjustable bend, blur, darkness, and the angle at which the effect disappears.
-- Manual preview, lid-controlled preview, and a five-second desktop demonstration.
-- **⌘⌥B** to toggle the effect or stop a demonstration.
-- Optional opening sound and launch at login.
-- Built-in signed updates, with optional daily checks and installation by consent.
-- Capture and rendering stop when no longer needed; identical frames reuse prepared blur.
+- Три стиля: **Пластика**, **Тень** и **Иней** с матовым стеклом.
+- Настройка изгиба, размытия, затемнения и угла отключения эффекта.
+- Предпросмотр ползунком или движением крышки, пятисекундная демонстрация на рабочем столе.
+- **⌘⌥B** включает и выключает эффект, а во время демонстрации завершает ее.
+- Звук открытия и запуск при входе в систему — по желанию.
+- Встроенные обновления: проверка вручную или раз в день, установка с вашего согласия.
+- Захват и отрисовка останавливаются, когда не нужны; одинаковые кадры используют уже рассчитанное размытие.
 
-## Status and requirements
+## Готовность и требования
 
-**Experimental version 0.2.5.** [Download the release](https://github.com/cypresskir/Liduo/releases/tag/v0.2.5)
-or install it with Homebrew or npx. The archive is ad-hoc signed; it has no Developer ID certificate or Apple notarization.
-Development-signed local builds are separate from this downloadable archive.
+**Экспериментальная версия 0.2.5.** [Скачать выпуск](https://github.com/cypresskir/Liduo/releases/tag/v0.2.5)
+или установить через Homebrew и npx.
+Сборка имеет ad-hoc-подпись, но не сертификат Developer ID и не проверена Apple.
 
-- macOS **26 or later** and an **Apple silicon MacBook with a compatible lid-angle sensor**.
-- Tested on a **MacBook Pro with M4 Pro**. Compatibility with other models is not established.
-- The full-screen effect needs macOS screen-recording permission. The sample preview does not.
-- Only the built-in display is affected; external displays remain unchanged.
+Нужны macOS **26 или новее** и **MacBook на Apple silicon с совместимым датчиком угла крышки**.
+Приложение проверено на MacBook Pro с M4 Pro. Работа на других моделях пока не подтверждена.
 
-## Install
+Для работы нужен доступ к записи экрана в настройках macOS; предпросмотр со встроенной картинкой работает без разрешения. Интерфейс приложения — на русском.
 
-With Homebrew:
+## Установка
+
+Через Homebrew:
 
 ```sh
 brew tap cypresskir/liduo https://github.com/cypresskir/Liduo
 brew install --cask cypresskir/liduo/liduo
 ```
 
-If you trust this unnotarized build, allow **only Liduo** to run:
+Если доверяете сборке, разрешите запуск **только Liduo** и откройте ее:
 
 ```sh
 xattr -dr com.apple.quarantine "/Applications/Liduo.app"
 open "/Applications/Liduo.app"
 ```
 
-Or, with Node.js 22+ and npx, install directly from GitHub:
+Или через npx — нужен Node.js 22 или новее:
 
 ```sh
 npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.5 --allow-unnotarized
 open "/Applications/Liduo.app"
 ```
 
-`--allow-git=all` permits GitHub fetching for this npx command, as required by npm 12.
-The installer verifies SHA-256. `--allow-unnotarized` removes quarantine only
-from the installed app; without it quarantine is retained. Neither method changes
-global Gatekeeper settings or grants screen access.
-See [installation, updates, and a user-folder option](docs/INSTALLING.md).
+Параметр `--allow-git=all` разрешает npx скачать установщик из GitHub в этой команде;
+он нужен в npm 12. Установщик проверяет контрольную сумму архива. Флаг `--allow-unnotarized`
+снимает карантин только с Liduo; без него карантин сохраняется. Доступ к экрану
+нужно разрешить отдельно в настройках macOS.
 
-After installation, use **Проверить обновления…** in Liduo's menu or General Settings.
-Optional automatic checking is off by default. Updates are signed independently of
-Apple Developer ID. See [UPDATES.md](docs/UPDATES.md) for details and publishing instructions.
+[Установка без прав администратора, обновление и удаление](docs/INSTALLING.md).
 
-## Build and try it
+После установки новые версии можно получать прямо в Liduo: **«Проверить обновления…»**
+в меню или общих настройках. Автоматическая проверка включается отдельно. Перед
+установкой приложение проверяет подпись архива обновления.
 
-Use **macOS 26+**, **Apple silicon**, the full **Xcode 26.4+**, and **XcodeGen**.
-Open Xcode once to finish installing its components. Select that Xcode installation
-under **Xcode → Settings → Locations → Command Line Tools**.
+## Сборка и запуск
+
+Нужны **macOS 26+**, **Apple silicon**, полный **Xcode 26.4+** и **XcodeGen**.
+Откройте Xcode один раз и завершите установку компонентов. В **Xcode → Settings →
+Locations → Command Line Tools** выберите эту версию Xcode.
 
 ```sh
 brew install xcodegen
 xcodebuild -version
 ```
 
-Get the source, then run the following commands from the project root:
+Скачайте исходники. Все следующие команды выполняются из корня проекта:
 
 ```sh
 git clone https://github.com/cypresskir/Liduo.git
 cd Liduo
 ```
 
-The build script downloads the official Sparkle 2.9.6 distribution, verifies its
-SHA-256, and generates the Xcode project. The first dependency download needs an
-internet connection; subsequent builds use the `.build/` cache. A separate Metal
-Toolchain installation is not required.
+Скрипт сборки сам скачивает Sparkle 2.9.6 из официального выпуска, проверяет SHA-256
+и создает проект Xcode. Для первой загрузки зависимости нужен интернет; затем она
+берется из `.build/`. Отдельно устанавливать Metal Toolchain не нужно.
 
-### Build without an Apple certificate
+### Сборка без сертификата Apple
 
-An ad-hoc signature is enough for a local build. No Apple Developer account or
-update-signing key is required:
+Для локального запуска достаточно ad-hoc-подписи. Аккаунт Apple Developer и ключ
+подписи обновлений не требуются:
 
 ```sh
 ./build.sh adhoc
 ```
 
-This produces `dist/Liduo-v0.2.5-macos-arm64-adhoc.zip` and an adjacent `.sha256` file.
-The script does not overwrite an existing archive. Before rebuilding, move the
-previous ZIP and its `.sha256` file to a backup folder.
+Результат: `dist/Liduo-v0.2.5-macos-arm64-adhoc.zip` и файл `.sha256` рядом.
+Скрипт не перезаписывает готовый архив: перед повторной сборкой сохраните предыдущий
+ZIP и его `.sha256` в другой папке.
 
-Extract the app into a temporary folder:
+Распакуйте приложение во временную папку:
 
 ```sh
 liduo_stage=$(mktemp -d "${TMPDIR:-/tmp}/Liduo.XXXXXX")
@@ -111,21 +110,22 @@ ditto -x -k dist/Liduo-v0.2.5-macos-arm64-adhoc.zip "$liduo_stage"
 open "$liduo_stage"
 ```
 
-Drag `Liduo.app` from that folder into Applications. If Liduo is already installed,
-quit it from its menu and move the previous copy to a backup folder first. Then run:
+Из открывшейся папки перенесите `Liduo.app` в «Программы». Если Liduo уже установлена,
+сначала завершите ее через меню и сохраните старую копию в другой папке. Затем запустите:
 
 ```sh
 open "/Applications/Liduo.app"
 ```
 
-If macOS blocks a downloaded build, see [Install](#install) for an app-only launch
-exception. Removing quarantine is normally unnecessary for a locally built app.
+Если macOS блокирует скачанную сборку, способ разрешить запуск только Liduo приведен
+в разделе [«Установка»](#установка). Для приложения, собранного локально, снятие карантина
+обычно не требуется.
 
-### Build with a stable signing identity
+### Сборка с постоянной подписью
 
-If you already have an **Apple Development** certificate, use it for local updates
-so macOS can recognize existing screen permission. Substitute your Team ID and the
-certificate SHA-1 shown by the first command:
+Если у вас уже есть сертификат **Apple Development**, используйте его для локальных
+обновлений: так macOS сможет распознавать ранее выданный доступ к экрану. Подставьте
+свой Team ID и SHA-1 сертификата из вывода первой команды:
 
 ```sh
 security find-identity -v -p codesigning
@@ -134,63 +134,51 @@ export LIDUO_SIGN_IDENTITY="YOUR_CERTIFICATE_SHA1"
 ./build.sh development
 ```
 
-This produces `dist/Liduo-v0.2.5-local-arm64.zip`. Extract and install it as above,
-substituting that archive name in the `ditto` command. Keep the bundle identifier,
-certificate, and installation folder stable across updates. Ad-hoc builds may
-require screen permission again. See [Xcode and signing instructions](docs/BUILDING.md).
+Получится `dist/Liduo-v0.2.5-local-arm64.zip`. Распакуйте и установите его тем же способом,
+подставив это имя архива в команду `ditto`. Сохраняйте идентификатор приложения, сертификат
+и папку установки между обновлениями. У ad-hoc-сборок macOS может запросить доступ заново.
+Подробности: [сборка в Xcode и подпись](docs/BUILDING.md).
 
-### First launch
+### Первый запуск
 
-1. Choose **Разрешить доступ…** and enable Liduo in macOS screen-recording settings.
-2. Restart Liduo if macOS asks.
-3. Choose **Показать эффект** or gently move the lid. **⌘⌥B** turns the effect off.
+1. Нажмите **«Разрешить доступ…»** и разрешите Liduo запись экрана в настройках macOS.
+2. Перезапустите приложение, если macOS об этом попросит.
+3. Нажмите **«Показать эффект»** или плавно прикройте крышку. **⌘⌥B** отключает эффект.
 
-The bundled sample preview works without permission. Closing the window leaves
-Liduo running in the menu bar; choose **Выйти из Liduo** to quit.
+Предпросмотр со встроенной картинкой доступен без разрешения. После закрытия окна
+Liduo продолжает работать в строке меню; завершить ее можно через **«Выйти из Liduo»**.
 
-### Checks
+### Проверки
 
 ```sh
-./build.sh check          # compile only; no installation or archive
-./scripts/test.sh unit    # core tests; no signing certificate needed
-npm test                 # installer and signature tests; requires Node.js 22+
+./build.sh check          # только компиляция, без установки и архива
+./scripts/test.sh unit    # основные тесты, без сертификата
+npm test                 # проверки установщика и подписей; нужен Node.js 22+
 ```
 
-`./scripts/test.sh all` also exercises Metal and the built-in display. It requires
-an unlocked graphical session on a MacBook and briefly shows an animation.
-Preparing a signed update feed is only needed when releasing a version; see the
-[update publishing instructions](docs/UPDATES.md).
+`./scripts/test.sh all` дополнительно запускает проверки Metal и вывода на встроенный
+экран. Нужна разблокированная сессия на MacBook; во время проверки появится анимация.
+Подготовка подписанной ленты обновлений нужна только при выпуске версии — см.
+[инструкцию для публикации](docs/UPDATES.md).
 
-## How it works
+## Ограничения
 
-SwiftUI and AppKit provide the interface. A background IOKit HID reader supplies
-lid angles. ScreenCaptureKit captures the built-in display while excluding Liduo's
-own windows. Metal and Metal Performance Shaders render the fold, blur, and shading.
-The shader is compiled at runtime from the bundled source; no separate Metal
-Toolchain download is needed for the project build.
+- Эффект накладывает изображение поверх рабочего стола. Сами окна и координаты кликов не меняются.
+- Матовое стекло нарисовано собственным шейдером; это не системный материал Liquid Glass.
+- Датчик и недокументированный механизм скрытия курсора могут работать по-разному на других Mac и версиях macOS.
+- Захват идет в SDR, до 2560 пикселей по ширине и до 60 кадров/с. Отрисовка рассчитана
+  на частоту до 120 кадров/с на ProMotion, но эта частота не гарантируется на любом Mac.
+- Защищенное содержимое может не попасть в захват. Сон и работа дисплеев остаются под управлением macOS.
+- Длительный расход батареи и совместимость со всеми моделями MacBook еще не проверены.
 
-Screen frames stay in memory. Liduo does not record audio, save desktop images,
-or send captured content anywhere. See [Privacy](PRIVACY.md).
+Кадры обрабатываются в памяти, без сохранения снимков, записи звука и отправки в сеть.
+Подробнее: [конфиденциальность](PRIVACY.md), [проверки](docs/TESTING.md).
 
-## Current limitations
+## Участие в проекте и лицензия
 
-- This is an image overlay: application windows and their click coordinates do not move.
-- The frosted appearance is a custom shader, not the native Liquid Glass material.
-- The lid sensor format is hardware-dependent and is not a public Apple compatibility contract.
-- Hiding the pointer over another application's window uses an optional, undocumented
-  WindowServer connection property. If unavailable, background cursor hiding may not work.
-- Capture is SDR, at most 2560 pixels wide and 60 fps. Rendering can target up to
-  120 fps on ProMotion; that is not a guaranteed frame rate on every Mac.
-- Protected content may be absent from capture. Sleep and display behavior remain controlled by macOS.
-- Long-term battery use and the full range of MacBook models have not been validated.
+О том, как сообщить об ошибке или предложить улучшение, — в [CONTRIBUTING.md](CONTRIBUTING.md).
+Код и текстовая документация распространяются по [MIT](LICENSE).
+Для изображения предпросмотра действуют [отдельные условия](ASSETS.md).
 
-See [testing and known verification limits](docs/TESTING.md) before relying on performance claims.
-
-## Contributing and license
-
-Bug reports and focused improvements are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md).
-Source code and documentation text are under the [MIT license](LICENSE).
-The bundled preview image has [separate asset terms](ASSETS.md).
-
-Inspired by [Bendy](https://trybendy.app/). Liduo is an independent implementation
-and includes no Bendy source code or assets.
+Идея вдохновлена [Bendy](https://trybendy.app/). Liduo разработана независимо
+и не использует код или изображения Bendy.
