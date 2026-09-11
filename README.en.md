@@ -94,7 +94,7 @@ or send captured content anywhere. See [Privacy](PRIVACY.md).
 - Capture is SDR, at most 2560 pixels wide and 60 fps. Rendering can target up to
   120 fps on ProMotion; that is not a guaranteed frame rate on every Mac.
 - Protected content may be absent from capture. Sleep and display behavior remain controlled by macOS.
-- Long-term battery use and the full range of MacBook models have not been validated.
+- The owner reports normal battery behavior and operation on a second Mac; coverage of every MacBook model remains unverified. See [the verification record](docs/TESTING.md).
 
 See [testing and known verification limits](docs/TESTING.md) before relying on performance claims.
 

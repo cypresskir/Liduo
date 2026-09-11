@@ -41,7 +41,16 @@ app-only launch exception. No global Gatekeeper change is required.
 - Leave the app idle, close its window, and inspect CPU and Energy Impact after settling.
 - Verify screen permission persists across an update with the same signing identity.
 
-## Release candidate — 0.2.8 (22), 2026-09-11
+## Release verification — 0.2.8 (22), 2026-09-11
+
+The owner confirmed normal operation on a second Mac and no battery concerns.
+These user-reported checks close the remaining hardware and battery acceptance
+items for the audience rollout. The second Mac's model, macOS version, and battery
+test duration were not recorded; this is not a controlled battery benchmark or a
+claim of compatibility with every MacBook. The owner also decided that there will
+be no Apple certificate: Developer ID and notarization are not release requirements.
+Distribution continues with Liduo's existing permanent certificate and the
+documented macOS first-launch confirmation. The agreed rollout blockers are closed.
 
 On MacBook Pro M4 Pro / Mac16,8 / macOS 26.5.1, the final Release source passed
 47 tests with zero skips or failures at physical 60 Hz. After restoring ProMotion,
@@ -69,8 +78,9 @@ signature, and matching-payload checks. The DMG includes the Applications shortc
 offline guide, and Finder layout. Opening the DMG normally in Finder also showed
 the intended background and all three icons in their correct positions. Rendering
 the local HTML guide in the automated browser was blocked by its URL policy;
-that visual check remains unverified. A clean first launch on a second Mac, external
-display and sleep/wake coverage, and a multi-hour battery run remain unverified.
+that visual check remains unverified. The user report above does not establish
+individual clean-install, external-display, or sleep/wake scenarios, or a measured
+multi-hour battery run; those details remain outside the verified test record.
 This build has no Developer ID signature or Apple notarization.
 
 Detailed timing and idle measurements are in [PERFORMANCE.md](PERFORMANCE.md).

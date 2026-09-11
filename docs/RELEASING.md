@@ -63,6 +63,9 @@ and re-adding the old permission in macOS. The app does not reset permissions it
 
 ## Optional Developer ID and notarized archive
 
+This is an optional future path, not a requirement of the current release policy.
+The owner chose to distribute without an Apple certificate.
+
 A download recognized by Gatekeeper without an unnotarized-app exception needs a
 **Developer ID Application** certificate with its private key and successful Apple
 notarization. Apple Development is a
@@ -104,11 +107,13 @@ the current installer generator explicitly accepts only the self-signed archive.
 
 ## Current release boundary
 
-At preparation time, this Mac has Apple Development identities but no Developer ID
-Application identity. The notarization script has been syntax-checked; a live
-submission cannot be validated without that certificate and a notarization profile.
+The owner confirmed normal operation on a second Mac and no battery concerns,
+and explicitly chose distribution without an Apple certificate. The agreed
+audience-rollout blockers are closed. Developer ID and notarization are not pending
+requirements; the documented first-launch confirmation remains part of installation.
+The optional notarization script has been syntax-checked but not validated by a
+live Apple submission. See [TESTING.md](TESTING.md) for the scope of the user reports.
 The public 0.2.6 release used ad-hoc signing. Version 0.2.7 introduced the permanent
 self-signed identity, retained by 0.2.8. The actual installed app updated from
 0.2.8 (21) to (22) through Sparkle with its screen permission and preferences intact.
 Physical slow lid movement and the 60 Hz / ProMotion test matrices passed on M4 Pro.
-First launch on a second Mac and multi-hour battery behavior remain unverified.
