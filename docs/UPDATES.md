@@ -8,7 +8,10 @@ is needed for subsequent in-app updates, regardless of the initial installer.
 
 The Homebrew cask declares `auto_updates true`. To force a Homebrew-managed update,
 use `brew upgrade --cask --greedy cypresskir/liduo/liduo` after quitting the app.
-Ad-hoc builds may require screen permission again after an update.
+Version 0.2.7 and later use the same Liduo signing certificate across updates.
+The transition from 0.2.6 or earlier may require granting screen permission once
+again. If the system toggle is on but Liduo cannot use it, choose **Доступ включен,
+но не работает?** in General Settings. See [SIGNING.md](SIGNING.md).
 
 ## Trust and hosting
 
@@ -20,7 +23,7 @@ after a timeout. The public key is embedded in `Liduo/Info.plist`.
 The private key is stored in the macOS login Keychain under Sparkle's service and
 the account `local.laplapaw.Liduo.updates`. It is not in the repository, a release
 archive, or a CI variable. Do not generate a replacement key for an existing app:
-ad-hoc users cannot accept updates signed with a different key. Keep a secure
+existing users cannot accept updates signed with a different key. Keep a secure
 backup when migrating the signing Mac, following Sparkle's key-export instructions.
 
 Automatic checks are opt-in. System profiling is disabled. See [PRIVACY.md](../PRIVACY.md).
@@ -33,9 +36,9 @@ Automatic checks are opt-in. System profiling is disabled. See [PRIVACY.md](../P
 3. Build and prepare the exact archive. DMG packaging needs uv; see [BUILDING.md](BUILDING.md).
 
    ```sh
-   ./build.sh adhoc
-   ./scripts/build-dmg.sh dist/Liduo-v0.2.6-macos-arm64-adhoc.zip
-   ./scripts/prepare-update.sh dist/Liduo-v0.2.6-macos-arm64-adhoc.zip
+   ./build.sh selfsigned
+   ./scripts/build-dmg.sh dist/Liduo-v0.2.7-macos-arm64-selfsigned.zip
+   ./scripts/prepare-update.sh dist/Liduo-v0.2.7-macos-arm64-selfsigned.zip
    npm test
    ./scripts/test.sh unit
    ```
@@ -62,9 +65,10 @@ the generated project in Xcode. Build/test scripts run it automatically. No
 third-party binary is committed to Git. Sparkle's complete license notice is
 bundled as `Liduo/Sparkle-LICENSE.txt`.
 
-Signed development/release builds sign Sparkle's nested helpers and framework
-before signing Liduo. The ad-hoc channel uses no hardened-runtime library validation
-so an ad-hoc host can load the framework. Developer ID builds retain hardened runtime.
+All signed builds sign Sparkle's nested helpers and framework before signing Liduo.
+The self-signed channel uses rcodesign 0.29.0, downloaded with a pinned SHA-256.
+It uses no hardened-runtime library validation because it has no Apple Team ID.
+Developer ID builds retain hardened runtime.
 
 References: [Sparkle setup](https://sparkle-project.org/documentation/),
 [SwiftUI integration](https://sparkle-project.org/documentation/programmatic-setup/),

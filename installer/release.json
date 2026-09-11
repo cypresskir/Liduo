@@ -1,6 +1,6 @@
 {
-  "version": "0.2.6",
+  "version": "0.2.7",
   "repository": "cypresskir/Liduo",
-  "asset": "Liduo-v0.2.6-macos-arm64-adhoc.zip",
-  "sha256": "ef98fc60164d3aa062d7d2a820acd98435c104cf64f657711372280236e114a6"
+  "asset": "Liduo-v0.2.7-macos-arm64-selfsigned.zip",
+  "sha256": "547c8c6169da32797d4aaf55f07560834a5f071d7ad9805f00ea17097f7bbf26"
 }

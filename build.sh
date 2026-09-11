@@ -3,8 +3,8 @@ set -euo pipefail
 liduo_root="$(cd "$(dirname "$0")" && pwd)"
 liduo_mode="${1:-check}"
 case "$liduo_mode" in
-  check|development|adhoc|release) ;;
-  *) echo 'Usage: ./build.sh [check|development|adhoc|release]' >&2; exit 2 ;;
+  check|development|adhoc|selfsigned|release) ;;
+  *) echo 'Usage: ./build.sh [check|development|adhoc|selfsigned|release]' >&2; exit 2 ;;
 esac
 if [[ "$liduo_mode" == development || "$liduo_mode" == release ]]; then
   : "${LIDUO_TEAM_ID:?Set LIDUO_TEAM_ID to your Apple development team}"
@@ -34,27 +34,32 @@ elif [[ "$liduo_mode" == release ]]; then
   liduo_sign_args=(--force --options runtime --timestamp --sign "$LIDUO_SIGN_IDENTITY")
   liduo_requirement='anchor apple generic and certificate leaf[field.1.2.840.113635.100.6.1.13] exists'
   liduo_suffix='macos-arm64-unnotarized'
-else
+elif [[ "$liduo_mode" == development ]]; then
   liduo_sign_args=(--force --options runtime --timestamp=none --sign "$LIDUO_SIGN_IDENTITY")
   liduo_requirement='anchor apple generic'
   liduo_suffix='local-arm64'
 fi
 liduo_sparkle="$liduo_stage/Liduo.app/Contents/Frameworks/Sparkle.framework"
-for liduo_component in XPCServices/Installer.xpc XPCServices/Downloader.xpc Autoupdate Updater.app; do
-  liduo_component_path="$liduo_sparkle/Versions/B/$liduo_component"
-  [[ -e "$liduo_component_path" ]] || { echo "Missing Sparkle component: $liduo_component" >&2; exit 2; }
-  if [[ "$liduo_component" == XPCServices/Downloader.xpc ]]; then
-    codesign "${liduo_sign_args[@]}" --preserve-metadata=entitlements "$liduo_component_path"
-  else
-    codesign "${liduo_sign_args[@]}" "$liduo_component_path"
+if [[ "$liduo_mode" == selfsigned ]]; then
+  ./scripts/sign-selfsigned.sh "$liduo_stage/Liduo.app"
+  liduo_suffix='macos-arm64-selfsigned'
+else
+  for liduo_component in XPCServices/Installer.xpc XPCServices/Downloader.xpc Autoupdate Updater.app; do
+    liduo_component_path="$liduo_sparkle/Versions/B/$liduo_component"
+    [[ -e "$liduo_component_path" ]] || { echo "Missing Sparkle component: $liduo_component" >&2; exit 2; }
+    if [[ "$liduo_component" == XPCServices/Downloader.xpc ]]; then
+      codesign "${liduo_sign_args[@]}" --preserve-metadata=entitlements "$liduo_component_path"
+    else
+      codesign "${liduo_sign_args[@]}" "$liduo_component_path"
+    fi
+  done
+  codesign "${liduo_sign_args[@]}" "$liduo_sparkle"
+  codesign "${liduo_sign_args[@]}" "$liduo_stage/Liduo.app"
+  if [[ "$liduo_mode" != adhoc ]]; then
+    liduo_requirement="$liduo_requirement and certificate leaf[subject.OU] = \"$LIDUO_TEAM_ID\""
   fi
-done
-codesign "${liduo_sign_args[@]}" "$liduo_sparkle"
-codesign "${liduo_sign_args[@]}" "$liduo_stage/Liduo.app"
-if [[ "$liduo_mode" != adhoc ]]; then
-  liduo_requirement="$liduo_requirement and certificate leaf[subject.OU] = \"$LIDUO_TEAM_ID\""
+  codesign --verify --deep --strict -R "=$liduo_requirement" "$liduo_stage/Liduo.app"
 fi
-codesign --verify --deep --strict -R "=$liduo_requirement" "$liduo_stage/Liduo.app"
 liduo_version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$liduo_stage/Liduo.app/Contents/Info.plist")
 mkdir -p "$liduo_root/dist"
 liduo_output="$liduo_root/dist/Liduo-v${liduo_version}-${liduo_suffix}.zip"

@@ -30,21 +30,28 @@ The `LIDUO_DERIVED_DATA` environment variable can select a reusable build direct
 ## Build without an Apple certificate
 
 ```sh
-./build.sh adhoc
+./build.sh selfsigned
 ```
 
-This creates `dist/Liduo-v0.2.6-macos-arm64-adhoc.zip` and a SHA-256 file without an
-Apple account or signing certificate. It is not notarized.
+This creates `dist/Liduo-v0.2.7-macos-arm64-selfsigned.zip` and a SHA-256 file using
+the original Liduo release identity. It needs no Apple account. The encrypted
+private key and its Keychain password must already be present; see [SIGNING.md](SIGNING.md).
+The public certificate in Git alone cannot sign a build. Missing or mismatched
+keys stop the release rather than silently changing its identity. It is not notarized.
+
+For a one-off local build with no signing key, use `./build.sh adhoc` instead.
+Do not use those builds for repeated public updates: macOS can lose permission
+when the executable's hash changes.
 
 To package that exact app into a drag-to-install DMG:
 
 ```sh
 brew install uv
-./scripts/build-dmg.sh dist/Liduo-v0.2.6-macos-arm64-adhoc.zip
+./scripts/build-dmg.sh dist/Liduo-v0.2.7-macos-arm64-selfsigned.zip
 ```
 
 The script runs dmgbuild 1.6.7 in an isolated tool environment. It creates
-`dist/Liduo-v0.2.6-macos-arm64.dmg` and its SHA-256 file, with a Finder layout,
+`dist/Liduo-v0.2.7-macos-arm64.dmg` and its SHA-256 file, with a Finder layout,
 Applications shortcut, and offline Russian guide. It verifies the disk image,
 app signature, and unchanged app contents. Existing output files are never overwritten.
 Users do not need uv or any other build tools to install from this DMG.
@@ -54,7 +61,7 @@ The background asset can be regenerated with
 Only when preparing an update for existing Liduo users, run:
 
 ```sh
-./scripts/prepare-update.sh dist/Liduo-v0.2.6-macos-arm64-adhoc.zip
+./scripts/prepare-update.sh dist/Liduo-v0.2.7-macos-arm64-selfsigned.zip
 ```
 
 This uses the existing
@@ -75,7 +82,7 @@ export LIDUO_SIGN_IDENTITY="YOUR_CERTIFICATE_SHA1"
 ./build.sh development
 ```
 
-The script creates `dist/Liduo-v0.2.6-local-arm64.zip`. It will not overwrite an
+The script creates `dist/Liduo-v0.2.7-local-arm64.zip`. It will not overwrite an
 existing archive. The app uses `local.laplapaw.Liduo` as its existing bundle ID;
 it is kept stable for current installations. Use a distinct ID for an independent
 fork, and expect macOS to ask for screen access for that new application identity.

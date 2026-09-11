@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.7 — 2026-09-11
+
+- Switched public builds to a permanent self-signed certificate so changing the executable no longer changes its permission identity.
+- Reject release packaging with an ad-hoc signature or a different certificate.
+- Added a screen-access recovery guide for stale permissions from older builds, with a link to macOS settings.
+- Kept the existing Sparkle update key and documented the one-time permission transition from 0.2.6 or earlier.
+
 ## 0.2.6 — 2026-09-11
 
 - Added a drag-and-drop DMG with an Applications shortcut and an offline Russian first-launch guide.

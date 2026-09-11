@@ -1,6 +1,6 @@
 {
   "name": "liduo-installer",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "private": true,
   "description": "Install the Liduo macOS app from its GitHub release",
   "license": "MIT",

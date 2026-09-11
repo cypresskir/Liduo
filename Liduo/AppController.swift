@@ -128,6 +128,15 @@ import AVFoundation
         refreshPermission()
     }
 
+    func showPermissionRecovery() {
+        let alert = NSAlert()
+        alert.messageText = "Как восстановить доступ к экрану"
+        alert.informativeText = "macOS могла сохранить разрешение для прежней версии Liduo.\n\n1. В настройках записи экрана выберите Liduo и нажмите «−».\n2. Нажмите «+» и добавьте установленную Liduo заново.\n3. Включите доступ и перезапустите Liduo, если macOS попросит."
+        alert.addButton(withTitle: "Открыть настройки macOS")
+        alert.addButton(withTitle: "Закрыть")
+        if alert.runModal() == .alertFirstButtonReturn { openPrivacySettings() }
+    }
+
     func openPrivacySettings() {
         if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture") {
             NSWorkspace.shared.open(url)

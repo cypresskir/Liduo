@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { createHash } from 'node:crypto';
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { readFile, writeFile, mkdir, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -9,7 +9,7 @@ import { validateRelease } from '../installer/cli.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 if (process.argv.length !== 3) {
-  console.error('Usage: node scripts/prepare-installers.mjs dist/Liduo-vVERSION-macos-arm64-adhoc.zip');
+  console.error('Usage: node scripts/prepare-installers.mjs dist/Liduo-vVERSION-macos-arm64-selfsigned.zip');
   process.exit(2);
 }
 const archive = path.resolve(process.argv[2]);
@@ -22,6 +22,7 @@ const release = {
   sha256: createHash('sha256').update(await readFile(archive)).digest('hex'),
 };
 const url = validateRelease(release);
+if (!release.asset.endsWith('-selfsigned.zip')) throw new Error('Public releases must use the original Liduo signing certificate. Run build.sh selfsigned.');
 const stage = await mkdtemp(path.join(tmpdir(), 'LiduoInstallers-'));
 try {
   execFileSync('/usr/bin/ditto', ['-x', '-k', archive, stage]);
@@ -29,9 +30,7 @@ try {
   const plist = path.join(app, 'Contents/Info.plist');
   const value = key => execFileSync('/usr/libexec/PlistBuddy', ['-c', `Print :${key}`, plist], { encoding: 'utf8' }).trim();
   if (value('CFBundleIdentifier') !== 'local.laplapaw.Liduo' || value('CFBundleShortVersionString') !== version) throw new Error('Unexpected app identity/version.');
-  execFileSync('/usr/bin/codesign', ['--verify', '--strict', app]);
-  const details = spawnSync('/usr/bin/codesign', ['-d', '--verbose=2', app], { encoding: 'utf8' });
-  if (details.status !== 0 || !details.stderr.includes('Signature=adhoc')) throw new Error('Expected an ad-hoc build. Do not distribute an Apple Development build here.');
+  execFileSync(path.join(root, 'scripts/verify-release-signature.sh'), [app]);
 } finally { await rm(stage, { recursive: true, force: true }); }
 
 await mkdir(path.join(root, 'Casks'), { recursive: true });
@@ -52,10 +51,11 @@ await writeFile(path.join(root, 'Casks/liduo.rb'), `cask "liduo" do
   app "Liduo.app"
 
   caveats <<~EOS
-    This build is ad-hoc signed and has not been notarized by Apple.
+    This build uses Liduo's own signing certificate and is not notarized by Apple.
     If you trust it, allow this app only:
       xattr -dr com.apple.quarantine "#{appdir}/Liduo.app"
     Then open Liduo and grant screen-recording access in macOS settings.
+    Upgrading from 0.2.6 or earlier may require granting access once again.
   EOS
 end
 `);

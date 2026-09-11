@@ -1,7 +1,7 @@
 #!/bin/zsh
 set -euo pipefail
 liduo_root="$(cd "$(dirname "$0")/.." && pwd)"
-[[ $# -eq 1 ]] || { echo 'Usage: ./scripts/prepare-update.sh dist/Liduo-vVERSION-macos-arm64-adhoc.zip' >&2; exit 2; }
+[[ $# -eq 1 ]] || { echo 'Usage: ./scripts/prepare-update.sh dist/Liduo-vVERSION-macos-arm64-selfsigned.zip' >&2; exit 2; }
 liduo_archive="${1:A}"
 cd "$liduo_root"
 ./scripts/fetch-sparkle.sh

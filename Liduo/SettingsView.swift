@@ -213,6 +213,7 @@ struct GeneralSettingsView: View {
                         Text("Разрешите доступ, чтобы Liduo могла применить эффект к рабочему столу.")
                             .foregroundStyle(.secondary)
                         Button("Разрешить доступ…") { controller.requestScreenPermission() }.buttonStyle(.glassProminent)
+                        Button("Доступ включен, но не работает?") { controller.showPermissionRecovery() }.buttonStyle(.link)
                     }
                     DisclosureGroup("Как используется изображение", isExpanded: $privacyExpanded) {
                         VStack(alignment: .leading, spacing: 12) {

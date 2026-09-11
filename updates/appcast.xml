@@ -6,6 +6,22 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
     <channel>
         <title>Liduo</title>
         <item>
+            <title>0.2.7</title>
+            <pubDate>Fri, 11 Sep 2026 14:08:57 +0200</pubDate>
+            <sparkle:version>18</sparkle:version>
+            <sparkle:shortVersionString>0.2.7</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[# Liduo 0.2.7
+
+Исправлена причина потери доступа к экрану после обновлений: новые версии теперь подписываются одним постоянным сертификатом Liduo.
+
+При переходе с 0.2.6 или более ранней версии доступ может понадобиться выдать еще раз. Если в macOS он включен, а Liduo его не видит, откройте общие настройки и нажмите «Доступ включен, но не работает?». Приложение покажет, как удалить прежнее разрешение и добавить Liduo заново в настройках macOS.
+
+Приложение по-прежнему не прошло нотарификацию Apple. При первой установке может потребоваться подтверждение запуска в настройках macOS.
+]]></description>
+            <enclosure url="https://github.com/cypresskir/Liduo/releases/download/v0.2.7/Liduo-v0.2.7-macos-arm64-selfsigned.zip" length="5173057" type="application/octet-stream" sparkle:edSignature="xbKt7lToczzzEydZBNLHKMrg20fGi7WeX2193rQXzVFSFojiWqNfTc22l2XrRx5BM0RtbWUfA5Q42RtxitHtBg=="/>
+        </item>
+        <item>
             <title>0.2.6</title>
             <pubDate>Fri, 11 Sep 2026 12:59:37 +0200</pubDate>
             <sparkle:version>17</sparkle:version>
@@ -42,6 +58,6 @@ IMPORTANT: This file was signed by Sparkle. Any modifications to this file requi
     </channel>
 </rss>
 <!-- sparkle-signatures:
-edSignature: ocUvkNk3qLOncHvv0+IXZAX/IJqjP9XzmCEW2xvHSKKlNVs38+56IdWglEbX0J7BuVj0Tn3OI0BLc5T/E3n4BA==
-length: 3536
+edSignature: MXDGFMaEjaHQceioYapb25KJbug0B/edG8ExgL9Nxm3duFjyCyNhynTs1O9c5qiTDxFtsfpOWy1fDsTcukmMCg==
+length: 5257
 -->

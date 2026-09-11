@@ -1,15 +1,16 @@
 # Установка Liduo
 
 Нужны **macOS 26 или новее** и **MacBook на Apple silicon** с датчиком угла крышки.
-Xcode для установки готового приложения не нужен. Версия 0.2.6 доступна в
-[GitHub Releases](https://github.com/cypresskir/Liduo/releases/tag/v0.2.6).
+Xcode для установки готового приложения не нужен. Версия 0.2.7 доступна в
+[GitHub Releases](https://github.com/cypresskir/Liduo/releases/tag/v0.2.7).
 
-Сборка имеет ad-hoc-подпись, но не сертификат Developer ID и не проверена Apple.
+Сборка подписана постоянным сертификатом Liduo, но не сертификатом Developer ID
+и не проверена Apple.
 Разрешайте запуск, только если доверяете источнику.
 
 ## DMG: установка без Терминала
 
-[Скачайте DMG 0.2.6](https://github.com/cypresskir/Liduo/releases/download/v0.2.6/Liduo-v0.2.6-macos-arm64.dmg).
+[Скачайте DMG 0.2.7](https://github.com/cypresskir/Liduo/releases/download/v0.2.7/Liduo-v0.2.7-macos-arm64.dmg).
 
 1. Откройте образ и перетащите **Liduo** в **«Программы»**.
 2. Запустите приложение из «Программ». Если macOS заблокирует запуск и вы
@@ -72,7 +73,7 @@ open "$HOME/Applications/Liduo.app"
 тега GitHub, скачивает готовое приложение и проверяет SHA-256:
 
 ```sh
-npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.6 --allow-unnotarized
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.7 --allow-unnotarized
 open "/Applications/Liduo.app"
 ```
 
@@ -88,12 +89,12 @@ open "/Applications/Liduo.app"
 Для установки без прав администратора:
 
 ```sh
-npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.6 --allow-unnotarized --app-dir "$HOME/Applications"
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.7 --allow-unnotarized --app-dir "$HOME/Applications"
 open "$HOME/Applications/Liduo.app"
 ```
 
 Отдельного пакета `liduo` в npm проект не публикует. Используйте полный адрес
-`github:cypresskir/Liduo#v0.2.6`, чтобы запускать установщик из этого репозитория.
+`github:cypresskir/Liduo#v0.2.7`, чтобы запускать установщик из этого репозитория.
 
 ## Первый запуск
 
@@ -120,8 +121,8 @@ open "$HOME/Applications/Liduo.app"
 brew update
 brew upgrade --cask --greedy cypresskir/liduo/liduo
 
-# npx: замените v0.2.6 на тег нового выпуска
-npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.6 --allow-unnotarized --replace
+# npx: замените v0.2.7 на тег нового выпуска
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.7 --allow-unnotarized --replace
 ```
 
 Если использовали `--appdir` или `--app-dir`, повторите ту же папку при обновлении.
@@ -130,8 +131,19 @@ npx сохраняет старую копию рядом как `Liduo.previous
 Homebrew может снова установить карантин после обновления; при необходимости
 повторите команду `xattr` для Liduo.
 
-У ad-hoc-сборок подпись меняется между выпусками: macOS может попросить заново
-разрешить запись экрана. Установщик не меняет и не сбрасывает системные разрешения.
+С версии 0.2.7 приложение использует постоянный сертификат: изменение кода больше
+не меняет идентификатор подписи, по которому macOS узнает Liduo. При переходе
+с версии 0.2.6 или более ранней может понадобиться один раз заново разрешить запись экрана.
+
+Если доступ в macOS включен, но Liduo показывает «Не разрешен»:
+
+1. Откройте общие настройки Liduo и нажмите **«Доступ включен, но не работает?»**.
+2. Откройте настройки macOS, выберите Liduo в списке записи экрана и нажмите **«−»**.
+3. Нажмите **«+»**, добавьте установленную Liduo заново и включите доступ.
+4. Перезапустите Liduo, если macOS попросит.
+
+Установщик не сбрасывает разрешения автоматически. Не меняйте папку установки
+при обновлении и не запускайте одновременно старую и новую копии приложения.
 
 Лента обновлений и архив подписаны ключом Liduo. При ошибке проверки подписи
 установка отменяется. Подробнее о подготовке обновлений: [UPDATES.md](UPDATES.md).

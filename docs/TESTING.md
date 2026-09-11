@@ -19,7 +19,7 @@ application. Metal and physical-display checks remain a separate local step.
 
 ## Release smoke test on a physical MacBook
 
-For the ad-hoc download, follow [INSTALLING.md](INSTALLING.md) for its explicit
+For the self-signed download, follow [INSTALLING.md](INSTALLING.md) for its explicit
 app-only launch exception. No global Gatekeeper change is required.
 
 - Start a clean installation, grant screen permission, and restart if requested.
@@ -31,6 +31,33 @@ app-only launch exception. No global Gatekeeper change is required.
 - With an external display attached, verify it stays unaffected and the pointer is visible there.
 - Leave the app idle, close its window, and inspect CPU and Energy Impact after settling.
 - Verify screen permission persists across an update with the same signing identity.
+
+## Stable permission identity — 0.2.7
+
+On macOS 26.5.1 / MacBook Pro M4 Pro, an isolated app was granted ScreenCapture
+permission and then replaced with a different executable signed by the same
+self-signed certificate. The native UI and `CGPreflightScreenCaptureAccess()`
+reported access granted after relaunch, without another grant. TCC's system log
+attributed that permission to the test bundle, not the automation tool.
+
+A full copy of Liduo with its own test bundle ID then updated through Sparkle
+from test version 0.2.7 to 0.2.8 using a signed localhost feed. It relaunched with
+screen access still granted and its selected style and paused state retained.
+These test version numbers are not additional public releases. Re-signing that
+test app ad-hoc reproduced the denied-access state, confirming that the retained
+permission depended on the certificate. The recovery guide and its link to the
+macOS screen-recording pane were verified in the final app's native UI.
+
+The Release app, ZIP, and DMG passed signature and payload checks. The release
+guard accepted the committed certificate and rejected a different valid
+certificate with the same bundle ID, an ad-hoc signature, and a modified resource.
+All 25 hardware-independent Swift tests and 17 installer/update-signature tests
+passed. The final archive verified against the signed feed with the unchanged
+Sparkle public key. No rendering or sensor code changed in this release.
+
+The old public ad-hoc identity cannot silently transfer permission to the new
+certificate: the first transition may require one new grant. Other Mac models
+and macOS versions remain unverified. See [SIGNING.md](SIGNING.md).
 
 ## DMG installer — 0.2.6
 

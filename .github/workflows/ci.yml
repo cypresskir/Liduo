@@ -35,6 +35,10 @@ jobs:
           zsh -n scripts/fetch-sparkle.sh
           zsh -n scripts/prepare-update.sh
           zsh -n scripts/test.sh
+          zsh -n scripts/create-signing-identity.sh
+          zsh -n scripts/fetch-rcodesign.sh
+          zsh -n scripts/sign-selfsigned.sh
+          zsh -n scripts/verify-release-signature.sh
       - name: Save test results
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

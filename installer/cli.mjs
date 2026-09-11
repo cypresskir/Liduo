@@ -33,7 +33,7 @@ export function parseArgs(args) {
 export function validateRelease(release) {
   if (!/^\d+\.\d+\.\d+$/.test(release.version) ||
       !/^[a-zA-Z0-9-]+\/[a-zA-Z0-9_.-]+$/.test(release.repository) ||
-      release.asset !== `Liduo-v${release.version}-macos-arm64-adhoc.zip` ||
+      !['adhoc', 'selfsigned'].some(signing => release.asset === `Liduo-v${release.version}-macos-arm64-${signing}.zip`) ||
       !/^[a-f0-9]{64}$/.test(release.sha256)) throw new Error('Некорректные данные выпуска Liduo.');
   return `https://github.com/${release.repository}/releases/download/v${release.version}/${release.asset}`;
 }

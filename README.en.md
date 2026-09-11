@@ -25,9 +25,9 @@ The effect works offline; checking for and downloading updates needs an internet
 
 ## Status and requirements
 
-**Experimental version 0.2.6.** [Download the DMG](https://github.com/cypresskir/Liduo/releases/download/v0.2.6/Liduo-v0.2.6-macos-arm64.dmg)
-or open the [release page](https://github.com/cypresskir/Liduo/releases/tag/v0.2.6).
-The archive is ad-hoc signed; it has no Developer ID certificate or Apple notarization.
+**Experimental version 0.2.7.** [Download the DMG](https://github.com/cypresskir/Liduo/releases/download/v0.2.7/Liduo-v0.2.7-macos-arm64.dmg)
+or open the [release page](https://github.com/cypresskir/Liduo/releases/tag/v0.2.7).
+The archive uses Liduo's permanent signing certificate; it has no Developer ID certificate or Apple notarization.
 Development-signed local builds are separate from this downloadable archive.
 
 - macOS **26 or later** and an **Apple silicon MacBook with a compatible lid-angle sensor**.
@@ -38,9 +38,9 @@ Development-signed local builds are separate from this downloadable archive.
 
 ## Install
 
-Version 0.2.6 installs without Terminal, Homebrew, Node.js, or Xcode:
+Version 0.2.7 installs without Terminal, Homebrew, Node.js, or Xcode:
 
-1. Open `Liduo-v0.2.6-macos-arm64.dmg` and drag Liduo to **Программы** (Applications).
+1. Open `Liduo-v0.2.7-macos-arm64.dmg` and drag Liduo to **Программы** (Applications).
 2. Launch Liduo from Applications. If macOS blocks it and you trust the source,
    go to **System Settings → Privacy & Security → Open Anyway** and confirm.
 3. Choose **Разрешить доступ…** in Liduo and grant screen-recording permission.
@@ -54,6 +54,10 @@ See [installation, updates, and a user-folder option](docs/INSTALLING.md).
 After installation, use **Проверить обновления…** in Liduo's menu or General Settings.
 Optional automatic checking is off by default. Updates are signed independently of
 Apple Developer ID. See [UPDATES.md](docs/UPDATES.md) for details and publishing instructions.
+
+Upgrading from 0.2.6 or earlier may require granting screen access once again.
+If the macOS toggle is already on but the effect does not work, choose **Доступ
+включен, но не работает?** in Liduo's General Settings for recovery instructions.
 
 ### First launch
 

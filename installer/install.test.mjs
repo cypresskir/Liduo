@@ -60,6 +60,14 @@ test('Homebrew and npx reference the same version, URL and checksum', async () =
   assert.equal(url, validateRelease(manifest));
 });
 
+test('self-signed releases use an exact versioned asset name', () => {
+  const signed = { ...release, asset: 'Liduo-v0.2.4-macos-arm64-selfsigned.zip' };
+  assert.equal(validateRelease(signed), 'https://github.com/cypresskir/Liduo/releases/download/v0.2.4/Liduo-v0.2.4-macos-arm64-selfsigned.zip');
+  for (const asset of ['Liduo-v0.2.5-macos-arm64-selfsigned.zip', 'Liduo-v0.2.4-local-arm64.zip', '../Liduo-v0.2.4-macos-arm64-selfsigned.zip']) {
+    assert.throws(() => validateRelease({ ...signed, asset }));
+  }
+});
+
 test('unsupported platform is rejected before network or file operations', async t => {
   const f = await fixture(t);
   await assert.rejects(install(f.options, { ...f.deps, platform: 'linux' }), /macOS/);
