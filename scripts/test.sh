@@ -8,12 +8,13 @@ case "$liduo_suite" in
 esac
 command -v xcodegen >/dev/null || { echo 'Install XcodeGen: brew install xcodegen' >&2; exit 2; }
 cd "$liduo_root"
+./scripts/fetch-sparkle.sh
 xcodegen generate
 liduo_derived="${LIDUO_DERIVED_DATA:-$(mktemp -d "${TMPDIR:-/private/tmp}/LiduoTests.XXXXXX")}"
 liduo_results="${LIDUO_TEST_RESULTS:-$liduo_derived/Tests.xcresult}"
 liduo_selection=()
 if [[ "$liduo_suite" == unit ]]; then
-  liduo_selection=(-only-testing:LiduoTests/EffectTests -only-testing:LiduoTests/CursorTests)
+  liduo_selection=(-only-testing:LiduoTests/EffectTests -only-testing:LiduoTests/CursorTests -only-testing:LiduoTests/UpdateTests)
 else
   echo 'All tests require a physical MacBook with an active built-in display; a full-screen animation will appear.'
 fi

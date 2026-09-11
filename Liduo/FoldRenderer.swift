@@ -118,7 +118,7 @@ private final class GPUFrame: @unchecked Sendable {
 
     func invalidate() {
         guard let view, view.isPaused, let window = view.window,
-              window.isVisible, window.occlusionState.contains(.visible) else { return }
+              window.isVisible, mailbox == nil || window.occlusionState.contains(.visible) else { return }
         view.isPaused = false
     }
 
@@ -138,6 +138,7 @@ private final class GPUFrame: @unchecked Sendable {
     }
 
     func draw(in view: MTKView) {
+        if mailbox == nil, view.window?.isVisible != true { view.isPaused = true; return }
         guard inflight.wait(timeout: .now()) == .success else { return }
         guard let queue = resources.queue else { inflight.signal(); return }
         let params = parameters()
@@ -242,14 +243,15 @@ struct FoldPreview: NSViewRepresentable {
         super.viewDidMoveToWindow()
         if let visibilityObserver { NotificationCenter.default.removeObserver(visibilityObserver) }
         guard let window else { isPaused = true; return }
-        isPaused = !window.occlusionState.contains(.visible)
+        isPaused = !window.isVisible || !window.occlusionState.contains(.visible)
         onBecameVisible?()
         visibilityObserver = NotificationCenter.default.addObserver(forName: NSWindow.didChangeOcclusionStateNotification,
             object: window, queue: .main) { [weak self] _ in
                 MainActor.assumeIsolated {
                     guard let self else { return }
-                    self.isPaused = !(self.window?.occlusionState.contains(.visible) ?? false)
-                    if !self.isPaused { self.onBecameVisible?() }
+                    let ordered = self.window?.isVisible == true
+                    self.isPaused = !ordered || !(self.window?.occlusionState.contains(.visible) ?? false)
+                    if ordered { self.onBecameVisible?() }
                 }
             }
     }

@@ -123,10 +123,11 @@ struct OpenCycle: Sendable {
 }
 
 @MainActor @Observable final class AppModel {
+    @ObservationIgnored private let defaults: UserDefaults
     var preferences: Preferences {
         didSet {
             if let data = try? JSONEncoder().encode(preferences) {
-                UserDefaults.standard.set(data, forKey: "preferences.v1")
+                defaults.set(data, forKey: "preferences.v1")
             }
             onPreferencesChanged?()
         }
@@ -148,8 +149,9 @@ struct OpenCycle: Sendable {
     var framesReceived = 0
     @ObservationIgnored var onPreferencesChanged: (() -> Void)?
 
-    init() {
-        if let data = UserDefaults.standard.data(forKey: "preferences.v1"),
+    init(defaults: UserDefaults = .standard) {
+        self.defaults = defaults
+        if let data = defaults.data(forKey: "preferences.v1"),
            let saved = try? JSONDecoder().decode(Preferences.self, from: data) {
             preferences = saved.validated()
         } else { preferences = Preferences() }

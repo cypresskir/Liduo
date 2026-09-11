@@ -24,6 +24,16 @@ jobs:
           xcodegen --version
       - name: Build and run hardware-independent tests
         run: ./scripts/test.sh unit
+      - name: Installer checks
+        run: |
+          if ! command -v node >/dev/null; then brew install node; fi
+          node --version
+          npm test
+          ruby -c Casks/liduo.rb
+          zsh -n build.sh
+          zsh -n scripts/fetch-sparkle.sh
+          zsh -n scripts/prepare-update.sh
+          zsh -n scripts/test.sh
       - name: Save test results
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

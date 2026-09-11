@@ -1,7 +1,19 @@
 # Privacy
 
-Liduo runs locally. It has no account system, analytics, crash uploader, update
-service, or application code that sends data over the network.
+The desktop effect runs locally. Liduo has no account system, analytics, or crash
+uploader. Its optional update checker uses GitHub to find and download new versions.
+
+## Updates
+
+Automatic update checking is off by default. You can check manually or enable
+checks once a day in General Settings. Installing a new version requires consent.
+Sparkle checks a feed on `raw.githubusercontent.com` and downloads archives from
+GitHub Releases (including GitHub's download CDN). These requests expose ordinary
+connection information such as the IP address and user agent to GitHub.
+
+Sparkle's optional system profiling is disabled. Screen content, lid readings,
+settings, and diagnostic files are not included in update requests. The feed and
+archives are signed with Liduo's update key and verified before installation.
 
 ## Screen access
 

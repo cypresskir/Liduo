@@ -2,10 +2,11 @@
 
 **A lid-driven desktop effect for your MacBook.**
 
-[Русский](README.ru.md) · [Build from source](docs/BUILDING.md) · [Privacy](PRIVACY.md) · [Changelog](CHANGELOG.md)
+[Русский](README.ru.md) · [Install](docs/INSTALLING.md) · [Build from source](docs/BUILDING.md) · [Privacy](PRIVACY.md) · [Changelog](CHANGELOG.md)
 
 Liduo bends, blurs, and darkens the desktop as you close your MacBook's lid.
-It lives in the menu bar and runs locally, with no account or network service.
+It lives in the menu bar and processes screen content on your Mac.
+The effect works offline; checking for and downloading updates needs an internet connection.
 
 ![Liduo settings window with the bundled sample desktop](docs/images/settings.jpg)
 
@@ -19,39 +20,145 @@ It lives in the menu bar and runs locally, with no account or network service.
 - Manual preview, lid-controlled preview, and a five-second desktop demonstration.
 - **⌘⌥B** to toggle the effect or stop a demonstration.
 - Optional opening sound and launch at login.
+- Built-in signed updates, with optional daily checks and installation by consent.
 - Capture and rendering stop when no longer needed; identical frames reuse prepared blur.
 
 ## Status and requirements
 
-**Experimental source release, version 0.2.3.** A notarized public application
-archive is not included. Development-signed local builds are not public installers.
+**Experimental version 0.2.5.** [Download the release](https://github.com/cypresskir/Liduo/releases/tag/v0.2.5)
+or install it with Homebrew or npx. The archive is ad-hoc signed; it has no Developer ID certificate or Apple notarization.
+Development-signed local builds are separate from this downloadable archive.
 
 - macOS **26 or later** and an **Apple silicon MacBook with a compatible lid-angle sensor**.
 - Tested on a **MacBook Pro with M4 Pro**. Compatibility with other models is not established.
 - The full-screen effect needs macOS screen-recording permission. The sample preview does not.
 - Only the built-in display is affected; external displays remain unchanged.
 
-## Build and try it
+## Install
 
-Install **Xcode 26.4 or later** and **XcodeGen** (`brew install xcodegen`).
-A compile check requires no signing certificate:
+With Homebrew:
 
 ```sh
-./build.sh check
-./scripts/test.sh unit
+brew tap cypresskir/liduo https://github.com/cypresskir/Liduo
+brew install --cask cypresskir/liduo/liduo
 ```
 
-For a usable local application with a stable signing identity, follow
-[the development build instructions](docs/BUILDING.md#local-development-build).
-Keep its bundle identifier and signing identity stable across updates so macOS
-can recognize the screen permission.
+If you trust this unnotarized build, allow **only Liduo** to run:
 
-After building:
+```sh
+xattr -dr com.apple.quarantine "/Applications/Liduo.app"
+open "/Applications/Liduo.app"
+```
 
-1. Move `Liduo.app` to Applications and open it.
-2. Choose **Разрешить доступ…** and enable Liduo in macOS screen-recording settings.
-3. Restart Liduo if macOS asks. Use **Показать эффект** to try the desktop demonstration.
-4. Choose a style and gently move the lid. Use **⌘⌥B** to turn the effect off.
+Or, with Node.js 22+ and npx, install directly from GitHub:
+
+```sh
+npx --yes github:cypresskir/Liduo#v0.2.5 --allow-unnotarized
+open "/Applications/Liduo.app"
+```
+
+The npx installer verifies SHA-256. `--allow-unnotarized` removes quarantine only
+from the installed app; without it quarantine is retained. Neither method changes
+global Gatekeeper settings or grants screen access.
+See [installation, updates, and a user-folder option](docs/INSTALLING.md).
+
+After installation, use **Проверить обновления…** in Liduo's menu or General Settings.
+Optional automatic checking is off by default. Updates are signed independently of
+Apple Developer ID. See [UPDATES.md](docs/UPDATES.md) for details and publishing instructions.
+
+## Build and try it
+
+Use **macOS 26+**, **Apple silicon**, the full **Xcode 26.4+**, and **XcodeGen**.
+Open Xcode once to finish installing its components. Select that Xcode installation
+under **Xcode → Settings → Locations → Command Line Tools**.
+
+```sh
+brew install xcodegen
+xcodebuild -version
+```
+
+Get the source, then run the following commands from the project root:
+
+```sh
+git clone https://github.com/cypresskir/Liduo.git
+cd Liduo
+```
+
+The build script downloads the official Sparkle 2.9.6 distribution, verifies its
+SHA-256, and generates the Xcode project. The first dependency download needs an
+internet connection; subsequent builds use the `.build/` cache. A separate Metal
+Toolchain installation is not required.
+
+### Build without an Apple certificate
+
+An ad-hoc signature is enough for a local build. No Apple Developer account or
+update-signing key is required:
+
+```sh
+./build.sh adhoc
+```
+
+This produces `dist/Liduo-v0.2.5-macos-arm64-adhoc.zip` and an adjacent `.sha256` file.
+The script does not overwrite an existing archive. Before rebuilding, move the
+previous ZIP and its `.sha256` file to a backup folder.
+
+Extract the app into a temporary folder:
+
+```sh
+liduo_stage=$(mktemp -d "${TMPDIR:-/tmp}/Liduo.XXXXXX")
+ditto -x -k dist/Liduo-v0.2.5-macos-arm64-adhoc.zip "$liduo_stage"
+open "$liduo_stage"
+```
+
+Drag `Liduo.app` from that folder into Applications. If Liduo is already installed,
+quit it from its menu and move the previous copy to a backup folder first. Then run:
+
+```sh
+open "/Applications/Liduo.app"
+```
+
+If macOS blocks a downloaded build, see [Install](#install) for an app-only launch
+exception. Removing quarantine is normally unnecessary for a locally built app.
+
+### Build with a stable signing identity
+
+If you already have an **Apple Development** certificate, use it for local updates
+so macOS can recognize existing screen permission. Substitute your Team ID and the
+certificate SHA-1 shown by the first command:
+
+```sh
+security find-identity -v -p codesigning
+export LIDUO_TEAM_ID="YOUR_TEAM_ID"
+export LIDUO_SIGN_IDENTITY="YOUR_CERTIFICATE_SHA1"
+./build.sh development
+```
+
+This produces `dist/Liduo-v0.2.5-local-arm64.zip`. Extract and install it as above,
+substituting that archive name in the `ditto` command. Keep the bundle identifier,
+certificate, and installation folder stable across updates. Ad-hoc builds may
+require screen permission again. See [Xcode and signing instructions](docs/BUILDING.md).
+
+### First launch
+
+1. Choose **Разрешить доступ…** and enable Liduo in macOS screen-recording settings.
+2. Restart Liduo if macOS asks.
+3. Choose **Показать эффект** or gently move the lid. **⌘⌥B** turns the effect off.
+
+The bundled sample preview works without permission. Closing the window leaves
+Liduo running in the menu bar; choose **Выйти из Liduo** to quit.
+
+### Checks
+
+```sh
+./build.sh check          # compile only; no installation or archive
+./scripts/test.sh unit    # core tests; no signing certificate needed
+npm test                 # installer and signature tests; requires Node.js 22+
+```
+
+`./scripts/test.sh all` also exercises Metal and the built-in display. It requires
+an unlocked graphical session on a MacBook and briefly shows an animation.
+Preparing a signed update feed is only needed when releasing a version; see the
+[update publishing instructions](docs/UPDATES.md).
 
 ## How it works
 

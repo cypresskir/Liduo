@@ -7,6 +7,7 @@ import AVFoundation
 @MainActor final class AppController {
     static let shared = AppController()
     let model = AppModel()
+    let updater = AppUpdater()
     let sensor = LidSensor()
     let capture = DesktopCapture()
     private var overlay: NSPanel?
@@ -52,6 +53,7 @@ import AVFoundation
     func start() {
         guard !started, ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
         started = true
+        updater.start()
         model.permissionGranted = CGPreflightScreenCaptureAccess()
         model.launchAtLogin = SMAppService.mainApp.status == .enabled
         if let renderError = RenderResources.shared.error { model.error = renderError }

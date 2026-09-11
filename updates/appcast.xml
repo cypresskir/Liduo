@@ -1,0 +1,28 @@
+<?xml version="1.0" standalone="yes"?>
+<!-- sparkle-sign-warning:
+IMPORTANT: This file was signed by Sparkle. Any modifications to this file requires re-signing this file with generate_appcast or sign_update! The signed signature will be embedded at the end of this file.
+-->
+<rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" version="2.0">
+    <channel>
+        <title>Liduo</title>
+        <item>
+            <title>0.2.5</title>
+            <pubDate>Fri, 11 Sep 2026 09:56:50 +0200</pubDate>
+            <sparkle:version>16</sparkle:version>
+            <sparkle:shortVersionString>0.2.5</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+            <description sparkle:format="markdown"><![CDATA[В Liduo появились встроенные обновления.
+
+- Новую версию можно проверить в меню приложения и в общих настройках.
+- Фоновая проверка включается отдельно и выполняется раз в день.
+- Перед установкой Liduo проверяет подпись обновления. Установка начинается только с вашего согласия.
+- После установки приложение перезапускается; настройки эффекта сохраняются.
+]]></description>
+            <enclosure url="https://github.com/cypresskir/Liduo/releases/download/v0.2.5/Liduo-v0.2.5-macos-arm64-adhoc.zip" length="5114817" type="application/octet-stream" sparkle:edSignature="GhN4oSuJHpb2zOKYt+7m/CiIak1oMYrNPrvJ705mrCTi4PsQS47CFh2OpdfypT0U/qGQiufFZYohATK70xkdCw=="/>
+        </item>
+    </channel>
+</rss>
+<!-- sparkle-signatures:
+edSignature: QCx8VFKtgsa/tD3PLaQf5W5kEWDF0lSSyqgNRpJHvh4mYNLtnkoVyrmFk1Noj+gkhhc/HU5EjFGx/6NybrnsDQ==
+length: 1768
+-->

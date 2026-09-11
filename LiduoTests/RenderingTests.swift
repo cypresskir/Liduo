@@ -1,5 +1,6 @@
 import AppKit
 import MetalKit
+import SwiftUI
 import XCTest
 @testable import Liduo
 
@@ -54,6 +55,73 @@ import XCTest
         renderer.invalidate()
         try await Task.sleep(for: .milliseconds(250))
         XCTAssertGreaterThan(renderer.framesDrawn, settled)
+    }
+
+    func testSwiftUIPreviewUpdatesAfterAngleAndAppearanceChanges() async throws {
+        let domain = "LiduoPreviewTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: domain))
+        defer { defaults.removePersistentDomain(forName: domain) }
+        let model = AppModel(defaults: defaults)
+        model.preferences = Preferences().applying(.frost)
+        model.preferences.clearAngle = 80
+        model.previewAngle = 102
+        let hosting = NSHostingView(rootView: SettingsView(model: model, controller: AppController.shared))
+        let window = NSPanel(contentRect: NSRect(x: 160, y: 160, width: 860, height: 672),
+            styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary, .ignoresCycle]
+        window.level = NSWindow.Level(rawValue: NSWindow.Level.statusBar.rawValue + 2)
+        window.contentView = hosting
+        window.orderFrontRegardless()
+        defer { window.orderOut(nil); window.close() }
+        func metalView(in view: NSView) -> MTKView? {
+            if let metal = view as? MTKView { return metal }
+            return view.subviews.lazy.compactMap { metalView(in: $0) }.first
+        }
+        let deadline = CACurrentMediaTime() + 5
+        while metalView(in: hosting) == nil, CACurrentMediaTime() < deadline {
+            try await Task.sleep(for: .milliseconds(20))
+        }
+        let view = try XCTUnwrap(metalView(in: hosting))
+        let renderer = try XCTUnwrap(view.delegate as? FoldRenderer)
+        try await Task.sleep(for: .milliseconds(700))
+        XCTAssertEqual(renderer.parameters().progress, 0)
+        XCTAssertGreaterThan(renderer.framesDrawn, 0)
+        XCTAssertTrue(view.isPaused)
+
+        let clearFrames = renderer.framesDrawn
+        model.previewAngle = 59
+        try await Task.sleep(for: .milliseconds(400))
+        XCTAssertEqual(renderer.parameters().progress, 21.0 / 65, accuracy: 0.0001,
+            "The SwiftUI angle control must update the renderer after it has gone idle")
+        XCTAssertGreaterThan(renderer.framesDrawn, clearFrames)
+
+        let foldedFrames = renderer.framesDrawn
+        model.preferences.blur = 0.1
+        try await Task.sleep(for: .milliseconds(400))
+        XCTAssertEqual(renderer.parameters().preferences.blur, 0.1)
+        XCTAssertGreaterThan(renderer.framesDrawn, foldedFrames)
+        let idleDeadline = CACurrentMediaTime() + 1.5
+        while !view.isPaused, CACurrentMediaTime() < idleDeadline {
+            try await Task.sleep(for: .milliseconds(20))
+        }
+        XCTAssertTrue(view.isPaused, "The updated preview must return to idle")
+
+        window.orderOut(nil)
+        try await Task.sleep(for: .milliseconds(200))
+        model.previewAngle = 102
+        let hiddenFrames = renderer.framesDrawn
+        try await Task.sleep(for: .milliseconds(200))
+        XCTAssertEqual(renderer.framesDrawn, hiddenFrames)
+        window.orderFrontRegardless()
+        try await Task.sleep(for: .milliseconds(400))
+        XCTAssertEqual(renderer.parameters().progress, 0)
+        XCTAssertGreaterThan(renderer.framesDrawn, hiddenFrames)
+        let reopenedFrames = renderer.framesDrawn
+        model.previewAngle = 55
+        try await Task.sleep(for: .milliseconds(400))
+        XCTAssertEqual(renderer.parameters().progress, 25.0 / 65, accuracy: 0.0001)
+        XCTAssertGreaterThan(renderer.framesDrawn, reopenedFrames)
     }
 
     func testBlurReusesPreparedFrameButInvalidatesForNewContentAndRadius() throws {

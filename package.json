@@ -1,0 +1,21 @@
+{
+  "name": "liduo-installer",
+  "version": "0.2.5",
+  "private": true,
+  "description": "Install the Liduo macOS app from its GitHub release",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "liduo-install": "installer/cli.mjs"
+  },
+  "files": [
+    "installer/cli.mjs",
+    "installer/release.json"
+  ],
+  "scripts": {
+    "test": "node --test installer/*.test.mjs"
+  }
+}

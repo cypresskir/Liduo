@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.5 — 2026-09-11
+
+- Added built-in updates through Sparkle 2.9.6, with manual checks in the menus and General Settings.
+- Added optional daily checks, disabled by default. Installation always requires consent.
+- Required signed feeds and archive verification before extraction, with the private key kept in Keychain.
+- Updated Homebrew, npx, and release preparation to use the same signed update archive.
+
+## 0.2.4 — 2026-09-11
+
+- Prepared Homebrew and GitHub-based npx installers with pinned archive checksums.
+- Added an ad-hoc build mode and app-specific launch instructions without a Developer ID certificate.
+
+- Fixed preview updates being discarded when macOS temporarily reports an ordered
+  settings window as occluded. Hidden windows still stop rendering, and unchanged
+  frames still put the renderer to sleep.
+- Explained why the manual preview has no effect when its angle is at or above the cutoff.
+- Added a regression test through the complete SwiftUI settings window, including
+  changes after idle and hide/show cycles. Test preferences use a separate store.
+
 ## 0.2.3 — 2026-09-11
 
 - Replaced the drawn sample desktop with a bundled desktop image in the preview

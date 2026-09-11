@@ -13,8 +13,8 @@ settings:
     ENABLE_HARDENED_RUNTIME: YES
     ENABLE_DEBUG_DYLIB: NO
     GENERATE_INFOPLIST_FILE: NO
-    MARKETING_VERSION: "0.2.3"
-    CURRENT_PROJECT_VERSION: "14"
+    MARKETING_VERSION: "0.2.5"
+    CURRENT_PROJECT_VERSION: "16"
 targets:
   Liduo:
     type: application
@@ -31,6 +31,7 @@ targets:
         INFOPLIST_FILE: Liduo/Info.plist
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     dependencies:
+      - framework: .build/Sparkle-2.9.6/Sparkle.xcframework
       - sdk: IOKit.framework
       - sdk: ScreenCaptureKit.framework
       - sdk: Metal.framework

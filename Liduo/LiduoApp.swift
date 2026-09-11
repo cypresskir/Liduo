@@ -7,13 +7,17 @@ import AppKit
     var body: some Scene {
         Window("Liduo", id: "effect") {
             SettingsView(model: controller.model, controller: controller)
-                .frame(minWidth: 800, minHeight: 610)
+                .frame(width: 840, height: 630)
                 .onExitCommand { controller.stopDemo() }
         }
         .defaultSize(width: 840, height: 630)
         .windowStyle(.hiddenTitleBar)
-        .windowResizability(.contentMinSize)
+        .windowResizability(.contentSize)
         .commands {
+            CommandGroup(after: .appInfo) {
+                Button("Проверить обновления…") { controller.updater.checkForUpdates() }
+                    .disabled(!controller.updater.canCheckForUpdates)
+            }
             CommandGroup(replacing: .newItem) {}
             CommandGroup(replacing: .appSettings) {
                 SettingsMenuCommand()
@@ -80,6 +84,8 @@ private struct MenuContent: View {
             }
         }.disabled(!model.permissionGranted)
         Divider()
+        Button("Проверить обновления…") { controller.updater.checkForUpdates() }
+            .disabled(!controller.updater.canCheckForUpdates)
         Button("Выйти из Liduo") { NSApplication.shared.terminate(nil) }.keyboardShortcut("q")
     }
 }

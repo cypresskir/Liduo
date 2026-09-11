@@ -25,3 +25,7 @@ dist/
 *.keychain*
 *.local.xcconfig
 VERIFICATION.md
+node_modules/
+*.tgz
+work/
+design/logo-concepts/

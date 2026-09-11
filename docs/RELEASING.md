@@ -1,8 +1,8 @@
 # Releasing
 
-The first GitHub publication can be a **source-only prerelease**. The existing
-Apple Development build is for local use and must not be attached as the regular
-public application download.
+The first GitHub publication can include source code and an explicitly labelled
+**ad-hoc-signed prerelease**. The Apple Development build remains for local use;
+it is not the archive used by Homebrew or npx.
 
 ## Source publication
 
@@ -13,15 +13,48 @@ public application download.
 4. Create the GitHub repository and push `main` only when publication is approved.
 5. Run CI on GitHub. Enable private vulnerability reporting in repository settings
    if you want to use the private-reporting path described in `SECURITY.md`.
-6. Use [v0.2.3 release notes](releases/v0.2.3.md) for a draft prerelease. Tag the
+6. Use [v0.2.5 release notes](releases/v0.2.5.md) for a draft prerelease. Tag the
    reviewed commit. GitHub can generate source archives from that tag.
 
 There is no automatic publish workflow. Pushing source does not upload a binary.
 
-## Public application archive
+## Homebrew and npx without a Developer ID certificate
 
-A normal download for other Macs needs a **Developer ID Application** certificate
-with its private key and successful Apple notarization. Apple Development is a
+1. Keep the app version in `project.yml` and `package.json` identical.
+2. Run `./build.sh adhoc`. This creates `dist/Liduo-v0.2.5-macos-arm64-adhoc.zip`
+   and its SHA-256 file without accessing a certificate or Apple account.
+3. Run `./scripts/prepare-update.sh dist/Liduo-v0.2.5-macos-arm64-adhoc.zip`.
+   The script verifies the app and the Keychain update identity, then updates
+   `Casks/liduo.rb`, `installer/release.json`, and the signed `updates/appcast.xml`.
+4. Run `npm test`, `ruby -c Casks/liduo.rb`, and the app checks above. Test installation
+   on a compatible Mac. Do not describe this as an Apple-notarized build.
+5. Commit the installer files along with the source and tag that commit `v0.2.5`.
+   Keep the ZIP in `dist/` out of Git. With publication authorized, attach this exact
+   ZIP and `.sha256` file to the GitHub prerelease. Publish the feed to `main` only
+   after that ZIP is reachable. Rebuilding requires regenerating
+   signatures, checksum, and installer files before tagging; do not replace tagged assets.
+6. Verify both commands from [INSTALLING.md](INSTALLING.md) against the published
+   release, then remove the publication-pending notice from the READMEs.
+
+The cask uses a custom tap backed by this same repository. The two-argument `brew tap`
+command is required because the repository is named `Liduo`, not `homebrew-liduo`.
+npx reads the installer from the GitHub tag; no npm account or `npm publish` is needed.
+Subsequent updates can be installed within Liduo using Sparkle. See [UPDATES.md](UPDATES.md).
+`package.json` is private to prevent accidental registry publication.
+
+The prepared repository address is `cypresskir/Liduo`. If it changes, update the
+address in `scripts/prepare-installers.mjs` and installation examples, then regenerate
+the cask and manifest. Both installers must reference the same bytes and checksum.
+
+Ad-hoc signatures do not provide a stable Apple identity across builds. macOS can
+ask for screen access again after updates. Installation instructions include an
+explicit, app-only quarantine command; no global Gatekeeper changes or TCC resets.
+
+## Optional Developer ID and notarized archive
+
+A download recognized by Gatekeeper without an unnotarized-app exception needs a
+**Developer ID Application** certificate with its private key and successful Apple
+notarization. Apple Development is a
 different certificate type. Follow Apple's [Developer ID guide](https://developer.apple.com/developer-id/)
 and [notarization workflow](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow).
 
@@ -34,7 +67,7 @@ export LIDUO_TEAM_ID="YOUR_TEAM_ID"
 export LIDUO_SIGN_IDENTITY="YOUR_DEVELOPER_ID_CERTIFICATE_SHA1"
 ./build.sh release
 export LIDUO_NOTARY_PROFILE="YOUR_KEYCHAIN_PROFILE"
-./scripts/notarize.sh dist/Liduo-v0.2.3-macos-arm64-unnotarized.zip
+./scripts/notarize.sh dist/Liduo-v0.2.5-macos-arm64-unnotarized.zip
 ```
 
 `build.sh release` builds in Release mode, signs with hardened runtime and a
@@ -44,8 +77,8 @@ archive has `-unnotarized` in its name.
 `notarize.sh` uploads that archive to Apple. It checks the submission is accepted,
 staples the ticket, verifies it and Gatekeeper assessment, and only then creates:
 
-- `dist/Liduo-v0.2.3-macos-arm64.zip`
-- `dist/Liduo-v0.2.3-macos-arm64.zip.sha256`
+- `dist/Liduo-v0.2.5-macos-arm64.zip`
+- `dist/Liduo-v0.2.5-macos-arm64.zip.sha256`
 
 A failed submission does not create a final download. The script retains temporary
 files for diagnosis. Use `notarytool log` with the submission ID and the same
@@ -54,12 +87,14 @@ previous output aside; release scripts do not overwrite existing archives.
 
 Before uploading the final pair, test that exact archive on another compatible
 Mac, including first-launch permission, quitting during an effect, and sleep/wake.
-Do not change the signed bundle after stapling. Do not disable Gatekeeper or remove
-quarantine as an installation instruction for users.
+Do not change the signed bundle after stapling. A notarized download should not
+need quarantine removal. Keep the ad-hoc and notarized release channels distinct;
+the current installer generator explicitly accepts only the ad-hoc archive.
 
 ## Current release boundary
 
 At preparation time, this Mac has Apple Development identities but no Developer ID
 Application identity. The notarization script has been syntax-checked; a live
 submission cannot be validated without that certificate and a notarization profile.
-No public binary is declared ready by this repository preparation.
+An ad-hoc archive is prepared locally. Its GitHub download and first-launch behavior
+on a second Mac remain unverified until the release is published and tested there.

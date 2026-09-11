@@ -69,7 +69,10 @@ struct SettingsView: View {
                     .disabled(model.previewFollowsLid).tint(.secondary)
                     .accessibilityLabel("Угол в примере")
                     .accessibilityValue("\(Int(model.previewFollowsLid ? (model.angle ?? 0) : model.previewAngle)) градусов")
-                Text(model.previewFollowsLid ? "Прикройте крышку, чтобы увидеть эффект." : "Двигайте ползунок, чтобы посмотреть весь переход.")
+                Text(model.previewFollowsLid ? "Прикройте крышку, чтобы увидеть эффект."
+                    : model.previewAngle >= model.preferences.clearAngle
+                        ? "Эффект не виден при угле от \(Int(model.preferences.clearAngle))°. Сдвиньте ползунок влево."
+                        : "Двигайте ползунок, чтобы посмотреть весь переход.")
                     .font(.system(size: 12)).foregroundStyle(.secondary)
             }
             Divider().padding(.vertical, 2)
@@ -213,7 +216,7 @@ struct GeneralSettingsView: View {
                     }
                     DisclosureGroup("Как используется изображение", isExpanded: $privacyExpanded) {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("Изображение обрабатывается только на вашем Mac. Liduo не сохраняет снимки, не записывает звук и ничего не отправляет в интернет.")
+                            Text("Изображение обрабатывается только на вашем Mac. Liduo не сохраняет снимки, не записывает звук и не отправляет содержимое экрана в интернет.")
                                 .foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                             Button("Открыть настройки macOS") { controller.openPrivacySettings() }.buttonStyle(.link)
                         }.padding(.top, 10)
@@ -236,8 +239,27 @@ struct GeneralSettingsView: View {
                 }.padding(16).settingsSurface()
                 Text("Эффект работает только на экране MacBook. При закрытой крышке Mac засыпает как обычно.")
                     .font(.system(size: 12)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
-                Text("Liduo \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—")")
-                    .font(.system(size: 12)).foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Text("Обновления").fontWeight(.medium)
+                        Spacer()
+                        Text("Liduo \(Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—")")
+                            .foregroundStyle(.secondary)
+                    }
+                    HStack {
+                        Text("Проверять автоматически")
+                        Spacer()
+                        Toggle("Проверять автоматически", isOn: Binding(
+                            get: { controller.updater.automaticallyChecksForUpdates },
+                            set: { controller.updater.setAutomaticChecks($0) }
+                        )).labelsHidden().toggleStyle(.switch).controlSize(.small)
+                            .accessibilityLabel("Проверять автоматически")
+                    }
+                    Text("Проверка новых версий на GitHub раз в день. Установка — с вашего согласия.")
+                        .foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                    Button("Проверить обновления…") { controller.updater.checkForUpdates() }
+                        .disabled(!controller.updater.canCheckForUpdates)
+                }.padding(16).settingsSurface()
             }.font(.system(size: 13)).padding(24)
         }.background(Color(nsColor: .windowBackgroundColor))
     }

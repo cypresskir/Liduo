@@ -8,12 +8,14 @@ if `xcodebuild -version` points to a different installation.
 
 ```sh
 brew install xcodegen
+./scripts/fetch-sparkle.sh
 xcodegen generate
 open Liduo.xcodeproj
 ```
 
 The generated Xcode project is intentionally ignored by Git. Change `project.yml`
-when adding files or changing build settings. There are no third-party runtime dependencies.
+when adding files or changing build settings. Sparkle 2.9.6 is the only third-party
+runtime dependency; its official archive is checksum-pinned and cached under `.build/`.
 
 ## Compile check
 
@@ -24,6 +26,20 @@ when adding files or changing build settings. There are no third-party runtime d
 This builds an unsigned arm64 Release app in a temporary directory and prints
 its path. It does not install the app or create a public download.
 The `LIDUO_DERIVED_DATA` environment variable can select a reusable build directory.
+
+## Build without an Apple certificate
+
+```sh
+./build.sh adhoc
+./scripts/prepare-update.sh dist/Liduo-v0.2.5-macos-arm64-adhoc.zip
+```
+
+This creates an ad-hoc-signed archive and SHA-256 file without an Apple account
+or signing certificate. It is not notarized. The second command uses the existing
+Liduo update key in Keychain to sign the feed and archive, and pins the exact archive
+hash in the Homebrew cask and npx manifest. Independent forks need their own feed
+URL and public/private update key before distributing builds. See [INSTALLING.md](INSTALLING.md)
+for first launch and [RELEASING.md](RELEASING.md) for publication.
 
 ## Local development build
 
@@ -37,7 +53,7 @@ export LIDUO_SIGN_IDENTITY="YOUR_CERTIFICATE_SHA1"
 ./build.sh development
 ```
 
-The script creates `dist/Liduo-v0.2.3-local-arm64.zip`. It will not overwrite an
+The script creates `dist/Liduo-v0.2.5-local-arm64.zip`. It will not overwrite an
 existing archive. The app uses `local.laplapaw.Liduo` as its existing bundle ID;
 it is kept stable for current installations. Use a distinct ID for an independent
 fork, and expect macOS to ask for screen access for that new application identity.
