@@ -71,8 +71,40 @@ private final class GPUFrame: @unchecked Sendable {
     }
 }
 
+final class FramePresentationHistory: @unchecked Sendable {
+    private let lock = NSLock()
+    private var times: [Double] = []
+    private var nextIndex = 0
+    private var totalFrames = 0
+
+    func add(_ time: Double) {
+        guard time.isFinite, time > 0 else { return }
+        lock.lock(); defer { lock.unlock() }
+        if times.count < 1024 { times.append(time) }
+        else { times[nextIndex] = time }
+        nextIndex = (nextIndex + 1) % 1024
+        totalFrames += 1
+    }
+
+    func summary() -> [String: Double] {
+        lock.lock()
+        let samples = Array(Set(times)).sorted()
+        let count = totalFrames
+        lock.unlock()
+        var result = ["frames": Double(count), "samples": Double(samples.count)]
+        guard samples.count > 1, let first = samples.first, let last = samples.last, last > first else { return result }
+        let gaps = zip(samples, samples.dropFirst()).map { ($1 - $0) * 1000 }.sorted()
+        result["seconds"] = last - first
+        result["fps"] = Double(samples.count - 1) / (last - first)
+        result["gapP95MS"] = gaps[Int(Double(gaps.count - 1) * 0.95)]
+        result["gapMaxMS"] = gaps.last
+        return result
+    }
+}
+
 @MainActor final class FoldRenderer: NSObject, MTKViewDelegate {
     var parameters: () -> RenderParameters
+    var presentationHistory: FramePresentationHistory?
     private let resources = RenderResources.shared
     private let mailbox: FrameMailbox?
     private var blur: FrameBlur?
@@ -105,6 +137,7 @@ private final class GPUFrame: @unchecked Sendable {
     func makeView() -> MTKView {
         let view = VisibilityMetalView(frame: .zero, device: resources.device)
         self.view = view
+        view.isPaused = true
         view.colorPixelFormat = .bgra8Unorm_srgb
         view.clearColor = MTLClearColorMake(0, 0, 0, 0)
         view.framebufferOnly = true
@@ -168,14 +201,17 @@ private final class GPUFrame: @unchecked Sendable {
             blur?.invalidateCache(); glassBlur?.invalidateCache()
             inflight.signal(); return
         }
-        command.present(drawable)
         let retainedFrame = frame
         let semaphore = inflight
         command.addCompletedHandler { _ in
             withExtendedLifetime(retainedFrame) {}
             semaphore.signal()
         }
+        if let presentationHistory {
+            drawable.addPresentedHandler { presentationHistory.add($0.presentedTime) }
+        }
         command.commit()
+        drawable.present()
         lastPreview = preview; lastPreviewSize = view.drawableSize; lastRenderedSerial = serial
         lastVisualChange = now
         framesDrawn += 1
@@ -236,13 +272,62 @@ struct FoldPreview: NSViewRepresentable {
     }
 }
 
-@MainActor private final class VisibilityMetalView: MTKView {
+@MainActor private final class VisibilityMetalView: MTKView, @preconcurrency CAMetalDisplayLinkDelegate {
     var onBecameVisible: (() -> Void)?
+    private var linkDrawable: CAMetalDrawable?
+    nonisolated(unsafe) private var renderLink: CAMetalDisplayLink?
+    private var renderingPaused = false
     nonisolated(unsafe) private var visibilityObserver: NSObjectProtocol?
+
+    override var isPaused: Bool {
+        get { renderingPaused }
+        set {
+            renderingPaused = newValue
+            // Keep MetalKit's timer stopped; the Metal display link supplies each drawable.
+            super.isPaused = true
+            renderLink?.isPaused = newValue
+        }
+    }
+
+    override var preferredFramesPerSecond: Int {
+        didSet { updateFrameRate() }
+    }
+
+    private func updateFrameRate() {
+        let fps = Float(min(preferredFramesPerSecond, window?.screen?.maximumFramesPerSecond ?? 60))
+        renderLink?.preferredFrameRateRange = CAFrameRateRange(minimum: fps, maximum: fps, preferred: fps)
+    }
+
+    override var currentDrawable: CAMetalDrawable? { linkDrawable }
+
+    override var currentRenderPassDescriptor: MTLRenderPassDescriptor? {
+        guard let linkDrawable else { return nil }
+        let pass = MTLRenderPassDescriptor()
+        pass.colorAttachments[0].texture = linkDrawable.texture
+        pass.colorAttachments[0].clearColor = clearColor
+        pass.colorAttachments[0].loadAction = .clear
+        pass.colorAttachments[0].storeAction = .store
+        return pass
+    }
+
+    func metalDisplayLink(_ link: CAMetalDisplayLink, needsUpdate update: CAMetalDisplayLink.Update) {
+        guard !isPaused else { return }
+        linkDrawable = update.drawable
+        delegate?.draw(in: self)
+        linkDrawable = nil
+    }
+
     override func viewDidMoveToWindow() {
         super.viewDidMoveToWindow()
+        renderLink?.invalidate(); renderLink = nil
         if let visibilityObserver { NotificationCenter.default.removeObserver(visibilityObserver) }
         guard let window else { isPaused = true; return }
+        guard let layer = layer as? CAMetalLayer else { isPaused = true; return }
+        renderLink = CAMetalDisplayLink(metalLayer: layer)
+        renderLink?.delegate = self
+        renderLink?.preferredFrameLatency = 2
+        updateFrameRate()
+        renderLink?.add(to: .main, forMode: .common)
         isPaused = !window.isVisible || !window.occlusionState.contains(.visible)
         onBecameVisible?()
         visibilityObserver = NotificationCenter.default.addObserver(forName: NSWindow.didChangeOcclusionStateNotification,
@@ -256,6 +341,7 @@ struct FoldPreview: NSViewRepresentable {
             }
     }
     deinit {
+        renderLink?.invalidate()
         if let visibilityObserver { NotificationCenter.default.removeObserver(visibilityObserver) }
     }
 }

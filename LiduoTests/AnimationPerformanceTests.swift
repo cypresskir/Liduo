@@ -22,6 +22,9 @@ import XCTest
 
     private func measurePresentationCadence(fps: Int?, updatesSource: Bool) async throws {
         let screen = try XCTUnwrap(DesktopCapture.builtInScreen)
+        if let fps, fps != screen.maximumFramesPerSecond {
+            throw XCTSkip("Select \(fps) Hz in macOS Displays settings; capping ProMotion does not test a physical \(fps) Hz display")
+        }
         var buffer: CVPixelBuffer?
         XCTAssertEqual(CVPixelBufferCreate(kCFAllocatorDefault, 2560, 1662, kCVPixelFormatType_32BGRA,
             [kCVPixelBufferMetalCompatibilityKey: true, kCVPixelBufferIOSurfacePropertiesKey: [:]] as CFDictionary,

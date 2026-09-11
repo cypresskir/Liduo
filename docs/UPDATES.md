@@ -37,8 +37,8 @@ Automatic checks are opt-in. System profiling is disabled. See [PRIVACY.md](../P
 
    ```sh
    ./build.sh selfsigned
-   ./scripts/build-dmg.sh dist/Liduo-v0.2.7-macos-arm64-selfsigned.zip
-   ./scripts/prepare-update.sh dist/Liduo-v0.2.7-macos-arm64-selfsigned.zip
+   ./scripts/build-dmg.sh dist/Liduo-v0.2.8-macos-arm64-selfsigned.zip
+   ./scripts/prepare-update.sh dist/Liduo-v0.2.8-macos-arm64-selfsigned.zip
    npm test
    ./scripts/test.sh unit
    ```

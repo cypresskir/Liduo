@@ -4,7 +4,7 @@
 
 Liduo работает в строке меню. Выберите стиль и настройте, как изображение реагирует на движение крышки.
 
-[Скачать Liduo](https://github.com/cypresskir/Liduo/releases/download/v0.2.7/Liduo-v0.2.7-macos-arm64.dmg) · [English](https://github.com/cypresskir/Liduo/blob/main/README.en.md) · [Инструкция по установке](https://github.com/cypresskir/Liduo/blob/main/docs/INSTALLING.md)
+[Скачать Liduo](https://github.com/cypresskir/Liduo/releases/download/v0.2.8/Liduo-v0.2.8-macos-arm64.dmg) · [English](https://github.com/cypresskir/Liduo/blob/main/README.en.md) · [Инструкция по установке](https://github.com/cypresskir/Liduo/blob/main/docs/INSTALLING.md)
 
 ![Окно настроек Liduo со встроенным примером рабочего стола](docs/images/settings.jpg)
 
@@ -26,7 +26,7 @@ Liduo работает в строке меню. Выберите стиль и 
 
 ## Установка и первый запуск
 
-1. [Скачайте DMG](https://github.com/cypresskir/Liduo/releases/download/v0.2.7/Liduo-v0.2.7-macos-arm64.dmg), откройте его и перетащите Liduo в **«Программы»**.
+1. [Скачайте DMG](https://github.com/cypresskir/Liduo/releases/download/v0.2.8/Liduo-v0.2.8-macos-arm64.dmg), откройте его и перетащите Liduo в **«Программы»**.
 2. Запустите Liduo. Если macOS запросит подтверждение, откройте **Системные настройки → Конфиденциальность и безопасность → Все равно открыть**. (У Apple снова сломалась регистрация в Developer's Program, поэтому пока так).
 3. Нажмите **«Разрешить доступ…»** и разрешите Liduo запись экрана. Перезапустите приложение, если macOS попросит.
 4. Нажмите **«Показать эффект»** или прикройте крышку.

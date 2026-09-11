@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.8 — 2026-09-11
+
+- Drive rendering with CAMetalDisplayLink and two-frame latency to avoid main-thread drawable waits.
+- Smooth slow, quantized lid readings and preserve continuous blur-radius changes.
+- Keep visible Liduo settings windows in desktop capture, safely filter window IDs, and narrow the bottom blur band.
+- Clarify update notices when a local build is newer than the public release.
+- Add bounded, opt-in measurements of actual frame presentation to local diagnostics.
+- Keep the existing app certificate and Sparkle update key.
+
 ## 0.2.7 — 2026-09-11
 
 - Switched public builds to a permanent self-signed certificate so changing the executable no longer changes its permission identity.

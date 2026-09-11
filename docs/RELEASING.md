@@ -13,7 +13,7 @@ it is not the archive used by Homebrew or npx.
 4. Push `main` only when publication is approved and the new update ZIP is reachable.
 5. Run CI on GitHub. Enable private vulnerability reporting in repository settings
    if you want to use the private-reporting path described in `SECURITY.md`.
-6. Use [v0.2.7 release notes](releases/v0.2.7.md) for a draft prerelease. Tag the
+6. Use [v0.2.8 release notes](releases/v0.2.8.md) for a draft prerelease. Tag the
    reviewed commit. GitHub can generate source archives from that tag.
 
 There is no automatic publish workflow. Pushing source does not upload a binary.
@@ -21,20 +21,20 @@ There is no automatic publish workflow. Pushing source does not upload a binary.
 ## DMG, Homebrew and npx without a Developer ID certificate
 
 1. Keep the app version in `project.yml` and `package.json` identical.
-2. Run `./build.sh selfsigned`. This creates `dist/Liduo-v0.2.7-macos-arm64-selfsigned.zip`
+2. Run `./build.sh selfsigned`. This creates `dist/Liduo-v0.2.8-macos-arm64-selfsigned.zip`
    and its SHA-256 file using the existing private signing identity, with no Apple
    account. Restore the original identity if missing; never replace it for an
    update. See [SIGNING.md](SIGNING.md).
    With uv installed, run
-   `./scripts/build-dmg.sh dist/Liduo-v0.2.7-macos-arm64-selfsigned.zip` to create
+   `./scripts/build-dmg.sh dist/Liduo-v0.2.8-macos-arm64-selfsigned.zip` to create
    the DMG and its checksum from the same app. The DMG is the main download;
    the ZIP remains necessary for Sparkle, Homebrew, and npx.
-3. Run `./scripts/prepare-update.sh dist/Liduo-v0.2.7-macos-arm64-selfsigned.zip`.
+3. Run `./scripts/prepare-update.sh dist/Liduo-v0.2.8-macos-arm64-selfsigned.zip`.
    The script verifies the app and the Keychain update identity, then updates
    `Casks/liduo.rb`, `installer/release.json`, and the signed `updates/appcast.xml`.
 4. Run `npm test`, `ruby -c Casks/liduo.rb`, and the app checks above. Test installation
    on a compatible Mac. Do not describe this as an Apple-notarized build.
-5. Commit the installer files along with the source and tag that commit `v0.2.7`.
+5. Commit the installer files along with the source and tag that commit `v0.2.8`.
    Keep files in `dist/` out of Git. With publication authorized, attach the exact
    DMG, ZIP, and both `.sha256` files to the GitHub prerelease. Publish the feed to `main` only
    after that ZIP is reachable. Rebuilding requires regenerating
@@ -78,7 +78,7 @@ export LIDUO_TEAM_ID="YOUR_TEAM_ID"
 export LIDUO_SIGN_IDENTITY="YOUR_DEVELOPER_ID_CERTIFICATE_SHA1"
 ./build.sh release
 export LIDUO_NOTARY_PROFILE="YOUR_KEYCHAIN_PROFILE"
-./scripts/notarize.sh dist/Liduo-v0.2.7-macos-arm64-unnotarized.zip
+./scripts/notarize.sh dist/Liduo-v0.2.8-macos-arm64-unnotarized.zip
 ```
 
 `build.sh release` builds in Release mode, signs with hardened runtime and a
@@ -88,8 +88,8 @@ archive has `-unnotarized` in its name.
 `notarize.sh` uploads that archive to Apple. It checks the submission is accepted,
 staples the ticket, verifies it and Gatekeeper assessment, and only then creates:
 
-- `dist/Liduo-v0.2.7-macos-arm64.zip`
-- `dist/Liduo-v0.2.7-macos-arm64.zip.sha256`
+- `dist/Liduo-v0.2.8-macos-arm64.zip`
+- `dist/Liduo-v0.2.8-macos-arm64.zip.sha256`
 
 A failed submission does not create a final download. The script retains temporary
 files for diagnosis. Use `notarytool log` with the submission ID and the same
@@ -107,6 +107,8 @@ the current installer generator explicitly accepts only the self-signed archive.
 At preparation time, this Mac has Apple Development identities but no Developer ID
 Application identity. The notarization script has been syntax-checked; a live
 submission cannot be validated without that certificate and a notarization profile.
-The public 0.2.6 release used ad-hoc signing. Version 0.2.7 introduces the permanent
-self-signed identity. Permission retention was verified between two different
-test executables on this Mac; first-launch behavior on a second Mac remains unverified.
+The public 0.2.6 release used ad-hoc signing. Version 0.2.7 introduced the permanent
+self-signed identity, retained by 0.2.8. The actual installed app updated from
+0.2.8 (21) to (22) through Sparkle with its screen permission and preferences intact.
+Physical slow lid movement and the 60 Hz / ProMotion test matrices passed on M4 Pro.
+First launch on a second Mac and multi-hour battery behavior remain unverified.

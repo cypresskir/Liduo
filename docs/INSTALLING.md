@@ -1,8 +1,8 @@
 # Установка Liduo
 
 Нужны **macOS 26 или новее** и **MacBook на Apple silicon** с датчиком угла крышки.
-Xcode для установки готового приложения не нужен. Версия 0.2.7 доступна в
-[GitHub Releases](https://github.com/cypresskir/Liduo/releases/tag/v0.2.7).
+Xcode для установки готового приложения не нужен. Версия 0.2.8 доступна в
+[GitHub Releases](https://github.com/cypresskir/Liduo/releases/tag/v0.2.8).
 
 Сборка подписана постоянным сертификатом Liduo, но не сертификатом Developer ID
 и не проверена Apple.
@@ -10,7 +10,7 @@ Xcode для установки готового приложения не ну�
 
 ## DMG: установка без Терминала
 
-[Скачайте DMG 0.2.7](https://github.com/cypresskir/Liduo/releases/download/v0.2.7/Liduo-v0.2.7-macos-arm64.dmg).
+[Скачайте DMG 0.2.8](https://github.com/cypresskir/Liduo/releases/download/v0.2.8/Liduo-v0.2.8-macos-arm64.dmg).
 
 1. Откройте образ и перетащите **Liduo** в **«Программы»**.
 2. Запустите приложение из «Программ». Если macOS заблокирует запуск и вы
@@ -73,7 +73,7 @@ open "$HOME/Applications/Liduo.app"
 тега GitHub, скачивает готовое приложение и проверяет SHA-256:
 
 ```sh
-npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.7 --allow-unnotarized
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.8 --allow-unnotarized
 open "/Applications/Liduo.app"
 ```
 
@@ -89,12 +89,12 @@ open "/Applications/Liduo.app"
 Для установки без прав администратора:
 
 ```sh
-npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.7 --allow-unnotarized --app-dir "$HOME/Applications"
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.8 --allow-unnotarized --app-dir "$HOME/Applications"
 open "$HOME/Applications/Liduo.app"
 ```
 
 Отдельного пакета `liduo` в npm проект не публикует. Используйте полный адрес
-`github:cypresskir/Liduo#v0.2.7`, чтобы запускать установщик из этого репозитория.
+`github:cypresskir/Liduo#v0.2.8`, чтобы запускать установщик из этого репозитория.
 
 ## Первый запуск
 
@@ -121,8 +121,8 @@ open "$HOME/Applications/Liduo.app"
 brew update
 brew upgrade --cask --greedy cypresskir/liduo/liduo
 
-# npx: замените v0.2.7 на тег нового выпуска
-npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.7 --allow-unnotarized --replace
+# npx: замените v0.2.8 на тег нового выпуска
+npx --yes --allow-git=all github:cypresskir/Liduo#v0.2.8 --allow-unnotarized --replace
 ```
 
 Если использовали `--appdir` или `--app-dir`, повторите ту же папку при обновлении.

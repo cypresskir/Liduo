@@ -25,8 +25,8 @@ The effect works offline; checking for and downloading updates needs an internet
 
 ## Status and requirements
 
-**Experimental version 0.2.7.** [Download the DMG](https://github.com/cypresskir/Liduo/releases/download/v0.2.7/Liduo-v0.2.7-macos-arm64.dmg)
-or open the [release page](https://github.com/cypresskir/Liduo/releases/tag/v0.2.7).
+**Experimental version 0.2.8.** [Download the DMG](https://github.com/cypresskir/Liduo/releases/download/v0.2.8/Liduo-v0.2.8-macos-arm64.dmg)
+or open the [release page](https://github.com/cypresskir/Liduo/releases/tag/v0.2.8).
 The archive uses Liduo's permanent signing certificate; it has no Developer ID certificate or Apple notarization.
 Development-signed local builds are separate from this downloadable archive.
 
@@ -38,9 +38,9 @@ Development-signed local builds are separate from this downloadable archive.
 
 ## Install
 
-Version 0.2.7 installs without Terminal, Homebrew, Node.js, or Xcode:
+Version 0.2.8 installs without Terminal, Homebrew, Node.js, or Xcode:
 
-1. Open `Liduo-v0.2.7-macos-arm64.dmg` and drag Liduo to **Программы** (Applications).
+1. Open `Liduo-v0.2.8-macos-arm64.dmg` and drag Liduo to **Программы** (Applications).
 2. Launch Liduo from Applications. If macOS blocks it and you trust the source,
    go to **System Settings → Privacy & Security → Open Anyway** and confirm.
 3. Choose **Разрешить доступ…** in Liduo and grant screen-recording permission.

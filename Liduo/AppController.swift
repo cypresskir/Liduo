@@ -21,6 +21,7 @@ import AVFoundation
     private var permissionTimer: Timer?
     private var diagnosticsTimer: Timer?
     private var diagnosticsURL: URL?
+    private var presentationHistory: FramePresentationHistory?
     private var hotKey: GlobalHotKey?
     private var observers: [NSObjectProtocol] = []
     private var cycle = OpenCycle()
@@ -241,6 +242,7 @@ import AVFoundation
     }
 
     private func startCapture() {
+        presentationHistory = diagnosticsURL == nil ? nil : FramePresentationHistory()
         generation += 1
         let token = generation
         captureTask = Task { [weak self] in
@@ -323,6 +325,7 @@ import AVFoundation
             self.renderer = renderer; self.metalView = view; self.overlay = panel
         }
         if overlay?.frame != screen.frame { overlay?.setFrame(screen.frame, display: true) }
+        renderer?.presentationHistory = presentationHistory
         if !model.overlayVisible {
             effectCursor.start(on: screen.frame)
             metalView?.isPaused = false
@@ -407,7 +410,9 @@ import AVFoundation
 
     private func writeDiagnostics() {
         guard let diagnosticsURL else { return }
-        let dictionary: [String: Any] = ["angle": model.angle ?? -1, "sensor": model.sensorAvailable,
+        var dictionary: [String: Any] = ["angle": model.angle ?? -1, "sensor": model.sensorAvailable,
+            "appVersion": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "",
+            "buildVersion": Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "",
             "modelIdentifier": sensor.modelIdentifier,
             "macOSVersion": ProcessInfo.processInfo.operatingSystemVersionString,
             "sensorMode": model.sensorDetail, "permission": model.permissionGranted,
@@ -418,6 +423,7 @@ import AVFoundation
             "status": model.status, "error": model.error ?? "", "hotKeyError": model.hotKeyError ?? "",
             "enabled": model.preferences.enabled, "demo": model.demoActive,
             "metalReady": RenderResources.shared.error == nil]
+        if let presentationHistory { dictionary["presentation"] = presentationHistory.summary() }
         if let data = try? JSONSerialization.data(withJSONObject: dictionary, options: [.prettyPrinted, .sortedKeys]) {
             try? data.write(to: diagnosticsURL, options: .atomic)
         }

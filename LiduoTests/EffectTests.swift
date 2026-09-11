@@ -200,4 +200,16 @@ final class EffectTests: XCTestCase {
         XCTAssertEqual(restored.blur, 0)
         XCTAssertEqual(restored.shadow, 0.35)
     }
+
+    func testPresentationDiagnosticsMeasureActualFramesAndBoundStorage() {
+        let history = FramePresentationHistory()
+        history.add(0); history.add(.nan)
+        XCTAssertEqual(history.summary()["samples"], 0)
+        for frame in 0..<1201 { history.add(10 + Double(frame) / 60) }
+        let result = history.summary()
+        XCTAssertEqual(result["frames"], 1201)
+        XCTAssertEqual(result["samples"], 1024)
+        XCTAssertEqual(result["fps"] ?? 0, 60, accuracy: 0.001)
+        XCTAssertEqual(result["gapP95MS"] ?? 0, 1000.0 / 60, accuracy: 0.001)
+    }
 }

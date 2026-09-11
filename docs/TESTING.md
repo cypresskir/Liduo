@@ -2,7 +2,7 @@
 
 ## Automated checks
 
-`./scripts/test.sh unit` runs 28 tests for effect parameters, lid interpolation,
+`./scripts/test.sh unit` runs 29 tests for effect parameters, lid interpolation,
 sensor-jitter handling, capture safety conditions, the sound cycle, preference
 validation, cursor hide/show ownership, and update trust/default settings. These use test inputs and injected
 cursor callbacks; they do not validate a physical sensor or the OS cursor hook.
@@ -11,11 +11,12 @@ closing rejected devices, and keeping unrelated SPU interfaces out of angle read
 
 `./scripts/test.sh all` additionally exercises GPU blur and edge fading, opaque
 rendering, preview thumbnails, rendering sleep/wake behavior, and presentation
-cadence on the built-in display. The full suite currently contains 46 tests.
-The expanded presentation checks reproduce unresolved pacing failures at requested
-60/120 fps and measure main-thread drawable waits. See [the performance investigation](PERFORMANCE.md)
-for the baseline, unsuccessful experiment, and hardware limits; the full suite
-is not currently a green release gate.
+cadence on the built-in display. The full suite currently contains 47 tests.
+Run it with the display physically set to 60 Hz and again on ProMotion. The two
+explicit 60 Hz tests skip on ProMotion: requesting 60 fps does not switch the
+physical display mode. The release candidate passed both applicable matrices;
+the original pacing thresholds remain unchanged. See [the performance investigation](PERFORMANCE.md)
+for measurements, earlier unsuccessful experiments, and hardware limits.
 Slow-lid checks now cover one-degree reports at 0.5–10 degrees/s on 60/120 fps
 timelines, including uneven intervals produced by a 10 Hz quantized sensor.
 GPU checks also verify that small blur-radius changes reach the actual pixels.
@@ -39,6 +40,42 @@ app-only launch exception. No global Gatekeeper change is required.
 - With an external display attached, verify it stays unaffected and the pointer is visible there.
 - Leave the app idle, close its window, and inspect CPU and Energy Impact after settling.
 - Verify screen permission persists across an update with the same signing identity.
+
+## Release candidate — 0.2.8 (22), 2026-09-11
+
+On MacBook Pro M4 Pro / Mac16,8 / macOS 26.5.1, the final Release source passed
+47 tests with zero skips or failures at physical 60 Hz. After restoring ProMotion,
+45 passed and the two explicit physical-60-Hz checks skipped; there were no
+failures. These include GPU pixels, preview idle/wake, lid interpolation, capture
+safety, cursor ownership, and presentation timing. All 17 installer and update
+signature checks also passed. The display was left on ProMotion.
+
+The actual installed app updated through Sparkle from local 0.2.8 build 21 to
+build 22 using a localhost feed and the exact final release ZIP. The feed and ZIP
+used the existing update key; the executable retained Liduo's permanent signing
+identity. The restarted app kept its screen permission and saved effect settings,
+sound, login preference, and disabled automatic update checks. A second update
+check reported the latest version. It was then restarted normally, without the
+temporary feed argument or diagnostic logging; no feed override was persisted.
+
+The installed desktop demonstration captured and presented the effect, then
+stopped capture and restored the cursor without an error. The user subsequently
+confirmed that slow physical closing and opening now looks smooth. This verifies
+the current M4 Pro, not another MacBook model. Live capture still showed occasional
+longer frame gaps; the synthetic 120 Hz measurements are not a universal guarantee.
+
+The final ZIP and compressed DMG passed checksum, deep code-signature, update
+signature, and matching-payload checks. The DMG includes the Applications shortcut,
+offline guide, and Finder layout. Opening the DMG normally in Finder also showed
+the intended background and all three icons in their correct positions. Rendering
+the local HTML guide in the automated browser was blocked by its URL policy;
+that visual check remains unverified. A clean first launch on a second Mac, external
+display and sleep/wake coverage, and a multi-hour battery run remain unverified.
+This build has no Developer ID signature or Apple notarization.
+
+Detailed timing and idle measurements are in [PERFORMANCE.md](PERFORMANCE.md).
+Earlier sections below record the state at their respective checks, rather than
+additional unresolved failures in build 22.
 
 ## Bottom edge and visible Liduo windows
 
