@@ -5,32 +5,52 @@ import Sparkle
 @MainActor @Observable final class AppUpdater {
     private(set) var canCheckForUpdates = false
     private(set) var automaticallyChecksForUpdates = false
-    @ObservationIgnored private var controller: SPUStandardUpdaterController?
+    @ObservationIgnored private var updater: SPUUpdater?
     @ObservationIgnored private var observations: [NSKeyValueObservation] = []
 
     func start() {
-        guard controller == nil,
+        guard updater == nil,
               ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil else { return }
-        let controller = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil)
-        self.controller = controller
+        let driver = LiduoUpdateUserDriver(hostBundle: .main, delegate: nil)
+        let updater = SPUUpdater(hostBundle: .main, applicationBundle: .main, userDriver: driver, delegate: nil)
+        self.updater = updater
         observations = [
-            controller.updater.observe(\.canCheckForUpdates, options: [.initial, .new]) { [weak self] updater, _ in
+            updater.observe(\.canCheckForUpdates, options: [.initial, .new]) { [weak self] updater, _ in
                 MainActor.assumeIsolated { self?.canCheckForUpdates = updater.canCheckForUpdates }
             },
-            controller.updater.observe(\.automaticallyChecksForUpdates, options: [.initial, .new]) { [weak self] updater, _ in
+            updater.observe(\.automaticallyChecksForUpdates, options: [.initial, .new]) { [weak self] updater, _ in
                 MainActor.assumeIsolated { self?.automaticallyChecksForUpdates = updater.automaticallyChecksForUpdates }
             }
         ]
-        controller.startUpdater()
+        do { try updater.start() }
+        catch { NSApp.presentError(error) }
     }
 
     func checkForUpdates() {
         guard canCheckForUpdates else { return }
         NSApp.activate(ignoringOtherApps: true)
-        controller?.checkForUpdates(nil)
+        updater?.checkForUpdates()
     }
 
     func setAutomaticChecks(_ enabled: Bool) {
-        controller?.updater.automaticallyChecksForUpdates = enabled
+        updater?.automaticallyChecksForUpdates = enabled
+    }
+}
+
+@MainActor final class LiduoUpdateUserDriver: SPUStandardUserDriver {
+    override func showUpdateNotFoundWithError(_ error: Error, acknowledgement: @escaping () -> Void) {
+        super.showUpdateNotFoundWithError(Self.localizedNotice(error), acknowledgement: acknowledgement)
+    }
+
+    static func localizedNotice(_ error: Error, bundle: Bundle = .main) -> Error {
+        let original = error as NSError
+        guard let reason = original.userInfo[SPUNoUpdateFoundReasonKey] as? NSNumber,
+              reason.intValue == SPUNoUpdateFoundReason.onLatestVersion.rawValue else { return error }
+        let version = bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+        var info = original.userInfo
+        info[NSLocalizedDescriptionKey] = "Обновлений нет"
+        info[NSLocalizedRecoverySuggestionErrorKey] = "У вас последняя версия Liduo — \(version)."
+        info[NSLocalizedRecoveryOptionsErrorKey] = ["Закрыть"]
+        return NSError(domain: original.domain, code: original.code, userInfo: info)
     }
 }

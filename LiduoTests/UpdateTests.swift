@@ -1,5 +1,6 @@
 import XCTest
 import CryptoKit
+import Sparkle
 @testable import Liduo
 
 final class UpdateTests: XCTestCase {
@@ -33,5 +34,17 @@ final class UpdateTests: XCTestCase {
         updater.setAutomaticChecks(true)
         XCTAssertFalse(updater.canCheckForUpdates)
         XCTAssertFalse(updater.automaticallyChecksForUpdates)
+    }
+
+    @MainActor func testCopyChangePreservesOtherUpdateExplanations() {
+        for reason in [SPUNoUpdateFoundReason.unknown, .onNewerThanLatestVersion,
+                       .systemIsTooOld, .systemIsTooNew, .hardwareDoesNotSupportARM64] {
+            let original = NSError(domain: SUSparkleErrorDomain, code: Int(SUError.noUpdateError.rawValue), userInfo: [
+                SPUNoUpdateFoundReasonKey: NSNumber(value: reason.rawValue),
+                NSLocalizedDescriptionKey: "Обновление недоступно",
+                NSLocalizedRecoverySuggestionErrorKey: "Установите совместимую версию macOS."
+            ])
+            XCTAssertTrue(LiduoUpdateUserDriver.localizedNotice(original) as NSError === original)
+        }
     }
 }
