@@ -38,6 +38,16 @@ Development-signed local builds are separate from this downloadable archive.
 
 With Homebrew:
 
+If Homebrew is not installed, open Terminal and run the
+[official installation command](https://brew.sh/):
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+After installation, run the commands shown under **Next steps** to make `brew`
+available in your terminal. Then install Liduo:
+
 ```sh
 brew tap cypresskir/liduo https://github.com/cypresskir/Liduo
 brew install --cask cypresskir/liduo/liduo

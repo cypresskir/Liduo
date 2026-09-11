@@ -37,6 +37,16 @@ Liduo работает в строке меню и обрабатывает из
 
 Через Homebrew:
 
+Если Homebrew еще не установлен, откройте «Терминал» и выполните
+[команду с официального сайта](https://brew.sh/):
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+После установки выполните команды из раздела **Next steps**, который покажет
+установщик, чтобы `brew` стала доступна в терминале. Затем установите Liduo:
+
 ```sh
 brew tap cypresskir/liduo https://github.com/cypresskir/Liduo
 brew install --cask cypresskir/liduo/liduo
