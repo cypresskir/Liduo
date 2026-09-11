@@ -44,12 +44,20 @@ import Sparkle
 
     static func localizedNotice(_ error: Error, bundle: Bundle = .main) -> Error {
         let original = error as NSError
-        guard let reason = original.userInfo[SPUNoUpdateFoundReasonKey] as? NSNumber,
-              reason.intValue == SPUNoUpdateFoundReason.onLatestVersion.rawValue else { return error }
+        guard let reason = original.userInfo[SPUNoUpdateFoundReasonKey] as? NSNumber else { return error }
         let version = bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "—"
+        let message: String
+        switch reason.intValue {
+        case Int(SPUNoUpdateFoundReason.onLatestVersion.rawValue):
+            message = "У вас последняя версия Liduo — \(version)."
+        case Int(SPUNoUpdateFoundReason.onNewerThanLatestVersion.rawValue):
+            message = "Установлена Liduo \(version). Эта сборка новее последнего опубликованного выпуска."
+        default:
+            return error
+        }
         var info = original.userInfo
         info[NSLocalizedDescriptionKey] = "Обновлений нет"
-        info[NSLocalizedRecoverySuggestionErrorKey] = "У вас последняя версия Liduo — \(version)."
+        info[NSLocalizedRecoverySuggestionErrorKey] = message
         info[NSLocalizedRecoveryOptionsErrorKey] = ["Закрыть"]
         return NSError(domain: original.domain, code: original.code, userInfo: info)
     }

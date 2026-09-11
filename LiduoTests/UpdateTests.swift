@@ -37,8 +37,8 @@ final class UpdateTests: XCTestCase {
     }
 
     @MainActor func testCopyChangePreservesOtherUpdateExplanations() {
-        for reason in [SPUNoUpdateFoundReason.unknown, .onNewerThanLatestVersion,
-                       .systemIsTooOld, .systemIsTooNew, .hardwareDoesNotSupportARM64] {
+        for reason in [SPUNoUpdateFoundReason.unknown, .systemIsTooOld,
+                       .systemIsTooNew, .hardwareDoesNotSupportARM64] {
             let original = NSError(domain: SUSparkleErrorDomain, code: Int(SUError.noUpdateError.rawValue), userInfo: [
                 SPUNoUpdateFoundReasonKey: NSNumber(value: reason.rawValue),
                 NSLocalizedDescriptionKey: "Обновление недоступно",
